@@ -1,15 +1,13 @@
 package users
 
 import (
-	io/ioutil
+	//"io/ioutil"
 )
 
-const data_folder = "C:\Users\Katrina\Workspace\product\go\src\users\data"
+const data_folder = "/vagrant/go/src/users/data"
 
 type User struct{
 	Uid string
-	fname string
-	lname string
-	pword string
-	
+	Name string
+	Pword string
 }

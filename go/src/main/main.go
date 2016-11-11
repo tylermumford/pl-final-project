@@ -8,7 +8,7 @@ import (
 func main()  {
     fmt.Println("Main running.")
 
-	a := User{"uid", "fname", "lname", "pword"}
+	a := users.User{"uid", "name", "pword"}
 
-	fmt.Println(a.fname)
+	fmt.Println(a.Name)
 }
