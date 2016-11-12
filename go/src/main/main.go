@@ -3,26 +3,13 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"users"
 )
 
 func main() {
 
 	// Testing "users" package
 
-	fmt.Println("Main running.")
-
-	users.NewUser("myname", "email1", "password")
-
-	u := users.GetUser("email1")
-
-	fmt.Println(u.Date_Started.String())
-
-	if users.Auth("email1", "password") {
-		fmt.Println("true")
-	} else {
-		fmt.Println("There's a problem")
-	}
+	saveNewArgument("'Waffles are better than pancakes.'")
 
 	// Setting up the controller
 
