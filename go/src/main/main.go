@@ -86,11 +86,11 @@ func findArgIDInPath(p string) (string, bool) {
 }
 
 func displayArg(w http.ResponseWriter, argID string) {
-	a := arguments.getArgument(argID) 
+	arg := arguments.GetArg(argID) 
 	// gets struct:
 	//		id          string
 	//		description string
 	//		upvotes     int
 	//		downvotes   int
-	fmt.Fprintf(w, "%+v\n", a)
+	fmt.Fprintf(w, "%+v\n", arg)
 }
