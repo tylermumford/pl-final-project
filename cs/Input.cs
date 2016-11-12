@@ -7,52 +7,23 @@ public class Input
 {
     public static void Main(string[] args)
     {
-        // Stream inputStream = Console.OpenStandardInput();
-        // byte[] bytes = new byte[100];
-        // int outLength = inputStream.Read(bytes, 0, 100);
-        // char[] chars = Encoding.UTF8.GetChars(bytes, 0, outLength);
-        // string inStr = new string(chars);
-		// System.Console.Error.WriteLine("!!Arguments to storage: ");
-		// System.Console.Error.WriteLine("{0} !!", args);
-		if (args.Length > 0){
-			interpret(args);
-		}
-
-
-
-
-        // using(Stream stream = new FileStream("Arg.txt", FileMode.Create, FileAccess.Write, FileShare.None)){
-        // 	Argument argue = new Argument("Trump", "Trump v Hilary");
-        // 	IFormatter formatter = new BinaryFormatter();
-        // 	formatter.Serialize(stream, argue);
-        // }
-
-
-        // using(Stream stream1 = new FileStream("Arg.txt", FileMode.Open, FileAccess.Read, FileShare.Read)){
-        // 	IFormatter formatter1 = new BinaryFormatter();
-        // 	Argument argue1 = (Argument) formatter1.Deserialize(stream1);
-        // 	System.Console.WriteLine(argue1.getTitle());
-        // 	System.Console.WriteLine(argue1.getDescription());
-        // }
-
+		interpret(args);
     }
 
     // Commands: 
-    // First put "Arugment###" for which Argument to edit
+    // First put "Filename###" for which Argument to edit
     // Make a new Argument with title and Description: !arg@@@Title@@@Description
     public static void interpret(string[] args)
     {
 		// FOR DEBUGGING ARGUMENTS
-		foreach (var item in args)
-		{
-			System.Console.WriteLine("Argument: {0}", item);
-		}
+		// foreach (var item in args)
+		// {
+		// 	System.Console.WriteLine("Argument: {0}", item);
+		// }
 
 		var dataFolder = "/vagrant/data/storage/";
         try
         {
-            // string[] delims = { "@@@" };
-            // string[] args = interpretString.Split(delims, StringSplitOptions.RemoveEmptyEntries);
             string fileName = dataFolder + args[0] + ".txt";
 			Argument argue = null;
             if(!args[1].Equals("create"))
@@ -61,7 +32,6 @@ public class Input
 			}
 			using (FileStream fs = File.Open(fileName, FileMode.OpenOrCreate, FileAccess.Write))
             {
-				// IFormatter formatter = new BinaryFormatter();
                 switch (args[1])
                 {
                     case "create":
@@ -83,16 +53,12 @@ public class Input
 						fs.Write(argue.encode(),0,argue.encode().Length);
 						Console.WriteLine(argue.export());
 						break;
+					case "export":
+						System.Console.WriteLine(argue.export());	
+						break;
                     // case "!discuss":
 					// 	argue.changeMotion(4);
 					// 	fs.Write((argue.getMotion() as Discuss).encode(),0,(argue.getMotion() as Discuss).encode().Length);
-					// 	break;
-					// case "!secondcurrentmotion":
-					// 	// System.Console.WriteLine(argue3.getTitle());
-					// 	// System.Console.WriteLine(argue3.motionCount());
-					// 	// System.Console.WriteLine(argue3.getMotion().getMotionTitle());
-					// 	argue.getMotion().secondMotion();
-					// 	// formatter.Serialize(fs, argue3);
 					// 	break;
 					// case "!amend":
 					// 	break;
@@ -112,9 +78,9 @@ public class Input
         }
     }
 
+
 	public static Argument deArgument(string path)
 	{
-		// IFormatter formatter = new BinaryFormatter();
 		string text = File.ReadAllText(path);
 		string[] delims = { "@@@" };
         string[] args = text.Split(delims, StringSplitOptions.RemoveEmptyEntries);

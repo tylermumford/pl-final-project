@@ -8,10 +8,6 @@ import (
 
 func main() {
 
-	// Testing "users" package
-
-	saveNewArgument("'Waffles are better than pancakes.'")
-
 	// Setting up the controller
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
