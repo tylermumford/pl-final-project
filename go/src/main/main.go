@@ -8,7 +8,7 @@ import (
 func main()  {
     fmt.Println("Main running.")
 
-	users.NewUser("myname", "email1", "not")
+	users.NewUser("myname", "email1", "password")
 
 	fmt.Println(users.GetName("email1"))
 
