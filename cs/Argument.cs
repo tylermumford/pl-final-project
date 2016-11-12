@@ -68,7 +68,7 @@ public class Argument
 
 	public int motionCount()
 	{
-		return motionList.Count;
+		return this.motionList.Count;
 	}
 }
 
