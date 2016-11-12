@@ -8,10 +8,14 @@
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
+	<link rel="stylesheet" href="sticky-footer-navbar.css" media="screen" title="no title">
+
+	<link rel="stylesheet" href="savviestyle.css" media="screen" title="no title">
+
 	<!-- Optional theme -->
 	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"> -->
 
-	<link rel="stylesheet" href="sticky-footer-navbar.css" media="screen" title="no title">
+
 
 
 </head>
@@ -53,11 +57,35 @@
 
 	<!-- Begin page content -->
 	<div class="container">
-		<div class="well col-md-12 item-container">
-			<form class="sav-item" action="index.html" method="post">
-				<!-- Body Goes Here -->
-			</form>
+		<!-- Begin Snippet -->
+		<div class="well col-md-12 arg-item-container">
+		    <h1>Resolved:</h1>
+		    <div class="well resolution">
+		        <form class="resolution resolution-form" action="#" method="post">
+					<div class="form-group">
+						<label for="resolutionTitle">Short Title</label>
+						<input type="text" class="form-control" name="name" value="" placeholder="Short Title" id="shortTitle">
+					</div>
+					<textarea class="form-control" name="resolution" id="resolutionText" rows="4" placeholder="Resolution"></textarea>
+		            <button type="submit" class="btn btn-primary btn-block resolution-submit" name="resolution-submit">Submit</button>
+		        </form>
+		    </div>
+		    <div class="well motions clearfix">
+		        <h4 class="moveTo">I move to...</h4>
+				<div class="motion-group">
+					<button type="button" name="table-button" class="btn btn-danger">Table</button>
+					<button type="button" name="vote-button" class="btn btn-success">Vote</button>
+					<button type="button" name="amend-button" class="btn btn-warning">Amend</button>
+					<button type="button" name="discuss-button" class="btn btn-primary">Discuss</button>
+				</div>
+		    </div>
 		</div>
+		<!-- End Snippet -->
+
+
+
+
+
 	</div>
 
 	<footer class="footer">
