@@ -15,7 +15,7 @@ import (
 const (
 	SALT_BYTES  = 32
 	HASH_BYTES  = 64
-	data_folder = "/vagrant/go/src/users/data/"
+	data_folder = "/vagrant/data/users"
 )
 
 type User struct {

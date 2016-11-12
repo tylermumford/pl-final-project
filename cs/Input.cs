@@ -38,11 +38,12 @@ public class Input
     // Make a new Argument with title and Description: !arg@@@Title@@@Description
     public static void interpret(string interpretString)
     {
+		var dataFolder = "/vagrant/data/storage/";
         try
         {
             string[] delims = { "@@@" };
             string[] args = interpretString.Split(delims, StringSplitOptions.RemoveEmptyEntries);
-            string fileName = args[0] + ".txt";
+            string fileName = dataFolder + args[0] + ".txt";
             using (FileStream fs = File.Open(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
 				IFormatter formatter = new BinaryFormatter();

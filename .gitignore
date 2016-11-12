@@ -5,6 +5,8 @@
 .caddypid
 bin/
 !bin/caddy
+data
+
 
 # Go bookkeeping folders that aren't ours
 go/bin/*
