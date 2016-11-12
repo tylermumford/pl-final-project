@@ -45,12 +45,22 @@ func getArg(id string) argument {
 	str, _ := c.Output()
 	parts := strings.Split(string(str), "@@@")
 
-	u, _ := strconv.Atoi(parts[1])
-	d, _ := strconv.Atoi(parts[2])
+	u, _ := strconv.Atoi(strings.TrimSpace(parts[1]))
+	d, _ := strconv.Atoi(strings.TrimSpace(parts[2]))
 	return argument{
 		id:          id,
 		description: parts[0][1 : len(parts[0])-1],
 		upvotes:     u,
 		downvotes:   d,
 	}
+}
+
+func upvote(id string) {
+	c := makeCmd(id, "upvote", "")
+	c.Run()
+}
+
+func downvote(id string) {
+	c := makeCmd(id, "downvote", "")
+	c.Run()
 }

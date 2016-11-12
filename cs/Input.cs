@@ -46,12 +46,12 @@ public class Input
 					case "upvote":
 						argue.upvotes += 1;
 						fs.Write(argue.encode(),0,argue.encode().Length);
-						Console.WriteLine(argue.export());
+						// Console.WriteLine(argue.export());
 						break;
 					case "downvote":
 						argue.downvotes += 1;
 						fs.Write(argue.encode(),0,argue.encode().Length);
-						Console.WriteLine(argue.export());
+						// Console.WriteLine(argue.export());
 						break;
 					case "export":
 						System.Console.WriteLine(argue.export());	
