@@ -8,7 +8,13 @@ import (
 func main()  {
     fmt.Println("Main running.")
 
-	a := users.User{"uid", "name", "pword"}
+	users.NewUser("myname", "email1", "not")
 
-	fmt.Println(a.Name)
+	fmt.Println(users.GetName("email1"))
+
+	if users.Auth("email1", "password") {
+		fmt.Println("true")
+	} else {
+		fmt.Println("There's a problem")
+	}
 }
