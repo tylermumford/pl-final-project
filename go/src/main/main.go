@@ -10,7 +10,7 @@ func main() {
 
 	// Testing "users" package
 
-	saveNewArgument("'Waffles are better than pancakes.'")
+	//saveNewArgument("'Waffles are better than pancakes.'")
 
 	// Setting up the controller
 
@@ -22,27 +22,27 @@ func main() {
 		fmt.Fprint(w, "<p>Hello from <strong>Go</strong></p>")
 	})
 
-	http.HandleFunc("/args", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/args/", func(w http.ResponseWriter, r *http.Request) {
 		if argID, found := findArgIDInPath(r.URL.Path); found {
 			_ = argID
-			// displayArg(argId)
+			displayArg(w, argId)
 			return
 		}
 
 		fmt.Fprint(w, "<h1>All Arguments</h1>")
 
-		// TODO: Load arguments from Nick
-		// arguments := loadArguments(0)
+	//	TODO: Load arguments from Nick
+		arguments := loadArguments(0)
 
-		// if len(arguments) == 0 {
-		// 	fmt.Fprint(w, "<p>No arguments</p>")
-		// } else {
-		// 	fmt.Fprint(w, "<ul>")
-		// 	for _, a := range arguments {
-		// 		fmt.Fprintf(w, "<li>%v</li>", a.title)
-		// 	}
-		// 	fmt.Fprintf(w, "</ul>")
-		// }
+		if len(arguments) == 0 {
+			fmt.Fprint(w, "<p>No arguments</p>")
+		} else {
+			fmt.Fprint(w, "<ul>")
+			for _, a := range arguments {
+				fmt.Fprintf(w, "<li>%v</li>", a.title)
+			}
+			fmt.Fprintf(w, "</ul>")
+		}
 
 	})
 
@@ -83,4 +83,14 @@ func findArgIDInPath(p string) (string, bool) {
 	fmt.Println(sub[1])
 
 	return sub[1], true
+}
+
+func displayArg(w http.ResponseWriter, argID string) {
+	a := arguments.getArgument(argID) 
+	// gets struct:
+	//		id          string
+	//		description string
+	//		upvotes     int
+	//		downvotes   int
+	fmt.Fprintf(w, "%+v\n", a)
 }
