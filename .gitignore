@@ -1,6 +1,17 @@
 # Helper directory
 .vagrant/
 
+# More
+.caddypid
+bin/
+!bin/caddy
+
+# Go bookkeeping folders that aren't ours
+go/bin/*
+go/pkg/*
+go/src/*
+!go/src/{main|users}
+
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
 *.a

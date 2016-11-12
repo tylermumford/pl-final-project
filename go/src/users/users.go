@@ -1,80 +1,84 @@
 package users
 
 import (
-	"os"
 	"bufio"
-	"github.com/golang/crypto/scrypt"
+	"os"
 	"time"
+
+	// "github.com/golang/crypto/scrypt"
 	//"crypto/rand"
 	//"io"
 	//"fmt"
+	"crypto/sha256"
 )
 
-const(
-	SALT_BYTES = 32
-	HASH_BYTES = 64
+const (
+	SALT_BYTES  = 32
+	HASH_BYTES  = 64
 	data_folder = "/vagrant/go/src/users/data/"
 )
 
 type User struct {
-	Name, Email string
-	pwd []byte
+	Name, Email  string
+	pwd          []byte
 	Date_Started time.Time
-} 
+}
 
 func NewUser(name, email, pword string) {
-	f, err := os.Create(data_folder+email+".txt")
+	f, err := os.Create(data_folder + email + ".txt")
 	check(err)
 	defer f.Close()
 
-	_,err = f.WriteString(name+"\n")
+	_, err = f.WriteString(name + "\n")
 	check(err)
-	
-	date := time.Now().Format(time.RFC850)
-	_, err = f.WriteString(date+"\n")
 
-	_,err = f.Write(pHash(pword))
+	date := time.Now().Format(time.RFC850)
+	_, err = f.WriteString(date + "\n")
+
+	_, err = f.Write(pHash(pword))
 	check(err)
 
 	f.Sync()
 }
 
-
 func GetUser(email string) (user User) {
 	user = makeStruct(email)
-	
+
 	return
 }
 
 func pHash(pword string) (hash []byte) {
-	salt := []byte{118, 168, 47, 97, 146, 191, 30, 94, 167, 60, 50, 8, 191, 83, 179, 255, 216, 56, 220, 235, 139, 162, 140, 200, 91, 241, 88, 9, 98, 231, 9, 81}
+	// salt := []byte{118, 168, 47, 97, 146, 191, 30, 94, 167, 60, 50, 8, 191, 83, 179, 255, 216, 56, 220, 235, 139, 162, 140, 200, 91, 241, 88, 9, 98, 231, 9, 81}
 	//_, err := io.ReadFull(rand.Reader, salt)
 	//check(err)
 
-	hash, err := scrypt.Key([]byte(pword), salt, 1<<14, 8, 1, HASH_BYTES)
-	check(err)
+	// hash, err := scrypt.Key([]byte(pword), salt, 1<<14, 8, 1, HASH_BYTES)
+	// check(err)
+
+	sum := sha256.Sum256([]byte(pword))
+	hash = sum[:]
 
 	return
 }
 
 func Auth(email, pword string) bool {
 	user := makeStruct(email)
-	
+
 	password := pHash(pword)
 
-	return  compareSlice(user.pwd, password)
+	return compareSlice(user.pwd, password)
 }
 
-func compareSlice(a, b [] byte) bool {
-	if(a == nil && b == nil){
+func compareSlice(a, b []byte) bool {
+	if a == nil && b == nil {
 		return true
 	}
 
-	if(a == nil || b == nil){
+	if a == nil || b == nil {
 		return false
 	}
 
-	if(len(a) != len(b)) {
+	if len(a) != len(b) {
 		return false
 	}
 
@@ -84,11 +88,11 @@ func compareSlice(a, b [] byte) bool {
 		}
 	}
 
-	return true;
+	return true
 }
 
 func makeStruct(email string) (user User) {
-	f, err := os.Open(data_folder+email+".txt")
+	f, err := os.Open(data_folder + email + ".txt")
 	check(err)
 
 	b := bufio.NewReader(f)
@@ -112,7 +116,7 @@ func makeStruct(email string) (user User) {
 	return
 }
 
-func check(e error){
+func check(e error) {
 	if e != nil {
 		panic(e)
 	}
