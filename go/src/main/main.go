@@ -10,7 +10,9 @@ func main()  {
 
 	users.NewUser("myname", "email1", "password")
 
-	fmt.Println(users.GetName("email1"))
+	u := users.GetUser("email1")
+
+	fmt.Println(u.Date_Started.String())
 
 	if users.Auth("email1", "password") {
 		fmt.Println("true")
