@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Collections.Generic;
 [Serializable]
 public class Discuss:Motion
@@ -11,4 +12,18 @@ public class Discuss:Motion
     {
 		comments.Add(message);
     }
+
+	public string export()
+	{
+		string result = "Comments:";
+		comments.ForEach(i => result += (i+"\n\n"));
+		return result;
+	}
+
+	//Encoder
+	public byte[] encode()
+	{
+		byte[] data = Encoding.UTF8.GetBytes(export());
+		return data;
+	}
 }
