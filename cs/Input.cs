@@ -1,16 +1,22 @@
 using System;
 using System.Text;
 using System.IO;
+using System.Collections.Generic;
+
 public class Input
 {
     public static void Main(string[] args)
     {
-        Stream inputStream = Console.OpenStandardInput();
-        byte[] bytes = new byte[100];
-        int outLength = inputStream.Read(bytes, 0, 100);
-        char[] chars = Encoding.UTF8.GetChars(bytes, 0, outLength);
-        string inStr = new string(chars);
-        interpret(inStr);
+        // Stream inputStream = Console.OpenStandardInput();
+        // byte[] bytes = new byte[100];
+        // int outLength = inputStream.Read(bytes, 0, 100);
+        // char[] chars = Encoding.UTF8.GetChars(bytes, 0, outLength);
+        // string inStr = new string(chars);
+		// System.Console.Error.WriteLine("!!Arguments to storage: ");
+		// System.Console.Error.WriteLine("{0} !!", args);
+		if (args.Length > 0){
+			interpret(args);
+		}
 
 
 
@@ -34,16 +40,22 @@ public class Input
     // Commands: 
     // First put "Arugment###" for which Argument to edit
     // Make a new Argument with title and Description: !arg@@@Title@@@Description
-    public static void interpret(string interpretString)
+    public static void interpret(string[] args)
     {
+		// FOR DEBUGGING ARGUMENTS
+		foreach (var item in args)
+		{
+			System.Console.WriteLine("Argument: {0}", item);
+		}
+
 		var dataFolder = "/vagrant/data/storage/";
         try
         {
-            string[] delims = { "@@@" };
-            string[] args = interpretString.Split(delims, StringSplitOptions.RemoveEmptyEntries);
+            // string[] delims = { "@@@" };
+            // string[] args = interpretString.Split(delims, StringSplitOptions.RemoveEmptyEntries);
             string fileName = dataFolder + args[0] + ".txt";
 			Argument argue = null;
-            if(!args[1].Equals("!arg"))
+            if(!args[1].Equals("create"))
 			{
 				argue = deArgument(fileName);
 			}
@@ -52,21 +64,24 @@ public class Input
 				// IFormatter formatter = new BinaryFormatter();
                 switch (args[1])
                 {
-                    case "!arg":
+                    case "create":
                         Argument argueDef = new Argument(args[2]);
 						fs.Write(argueDef.encode(),0,argueDef.encode().Length);
+						Console.Error.WriteLine(argueDef.export());
                         break;
                     // case "!vote":
 					// 	argue.changeMotion(1);
 					// 	fs.Write((argue.getMotion() as Vote).encode(),0,(argue.getMotion() as Vote).encode().Length);
 					// 	break;
-					case "!upvote":
+					case "upvote":
 						argue.upvotes += 1;
 						fs.Write(argue.encode(),0,argue.encode().Length);
+						Console.WriteLine(argue.export());
 						break;
-					case "!downvote":
+					case "downvote":
 						argue.downvotes += 1;
 						fs.Write(argue.encode(),0,argue.encode().Length);
+						Console.WriteLine(argue.export());
 						break;
                     // case "!discuss":
 					// 	argue.changeMotion(4);

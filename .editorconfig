@@ -4,3 +4,8 @@ root = true
 end_of_line = lf
 encoding = utf-8
 indent_style = tab
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+[*.go]
+trim_trailing_whitespace = true
