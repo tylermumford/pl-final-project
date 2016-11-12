@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"users"
+	"regexp"
 )
 
 func main() {
@@ -58,10 +59,48 @@ func main() {
 
 	})
 
+	http.HandleFunc("/upvote/", func(w http.ResponseWriter, r *http.Request){
+		//fmt.Fprintf(w, "Searching")
+		if argID, found := findArgIDInPath(r.URL.Path); found {
+			_ = argID
+			fmt.Fprintf(w,argID)
+			return
+		} else {
+			fmt.Fprintf(w, "Not found...")
+		}
+		//passes arg_id to an "upvote" function
+	})
+
+	http.HandleFunc("/downvote/", func(w http.ResponseWriter, r *http.Request) {
+		if argID, found := findArgIDInPath(r.URL.Path); found {
+			fmt.Fprintf(w, argID)
+			return
+		} else {
+			fmt.Fprintf(w, "Does not exist")
+		}
+	})
+
+	http.HandleFunc("/create/", func(w http.ResponseWriter, r *http.Request) {
+		descr := r.PostFormValue("description")
+		//saveNewArgument(descr)
+	})
+
 	http.ListenAndServe("localhost:8000", nil)
 }
 
 func findArgIDInPath(p string) (string, bool) {
-	return "", false
+	// remove first char, find next slash (if none, no arg_id)
+	//		if is there, look at the next 5. If they are ALL
+	//		numbers, it's an arg_id
+	re := regexp.MustCompile("/([0-9]{5})$")
+	sub := re.FindStringSubmatch(p)
+
+
+	if sub == nil {
+		return "", false
+	}
+	fmt.Println(sub[1])
+
+	return sub[1], true
 	// if p[0:len(p)-3]
 }
