@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 )
 
 func main() {
@@ -45,10 +46,41 @@ func main() {
 
 	})
 
+	http.HandleFunc("/upvote/", func(w http.ResponseWriter, r *http.Request) {
+		if argID, found := findArgIDInPath(r.URL.Path); found {
+			_ = argID
+			fmt.Fprintf(w, argID)
+			return
+		} else {
+			fmt.Fprintf(w, "Not found...")
+		}
+	})
+
+	http.HandleFunc("/downvote/", func(w http.ResponseWriter, r *http.Request) {
+		if argID, found := findArgIDInPath(r.URL.Path); found {
+			fmt.Fprintf(w, argID)
+			return
+		} else {
+			fmt.Fprintf(w, "Does not exist")
+		}
+	})
+
+	http.HandleFunc("/create/", func(w http.ResponseWriter, r *http.Request) {
+		descr := r.PostFormValue("description")
+		saveNewArgument(descr)
+	})
+
 	http.ListenAndServe("localhost:8000", nil)
 }
 
 func findArgIDInPath(p string) (string, bool) {
-	return "", false
-	// if p[0:len(p)-3]
+	re := regexp.MustCompile("/([0-9]{5})$")
+	sub := re.FindStringSubmatch(p)
+
+	if sub == nil {
+		return "", false
+	}
+	fmt.Println(sub[1])
+
+	return sub[1], true
 }
