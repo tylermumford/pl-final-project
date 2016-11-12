@@ -2,9 +2,7 @@ echo "Downloading package lists..."
 apt-get update -qq
 
 echo "Installing packages..."
-apt-get install -y mono-runtime mono-devel mono-mcs git python-pip
-go get github.com/golang/crypto/scrypt
-pip install pyjade
+apt-get install -y mono-runtime mono-devel mono-mcs git
 
 echo "Installing Go..."
 curl -# https://storage.googleapis.com/golang/go1.7.3.linux-386.tar.gz > /tmp/go.tar.gz
