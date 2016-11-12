@@ -9,7 +9,7 @@ public enum MotionType
     Discuss = 4
 }
 [Serializable]
-public class Motion:Argument
+public class Motion
 {
     private MotionType type{ get; set; }
     private string title{ get; set; }

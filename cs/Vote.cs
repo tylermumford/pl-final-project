@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 [Serializable]
 public class Vote:Motion
 {
@@ -14,27 +15,27 @@ public class Vote:Motion
         this.passed = false;
     }
 
-    public void castAgainst()
+    public void castAgainst(int groupSize)
     {
 		if(this.seconded)
 		{
 			this.against+=1;
-        	completeArgument();
+        	completeArgument(groupSize);
 		}
     }
 
-    public void castInFavor()
+    public void castInFavor(int groupSize)
     {
 		if(this.seconded)
 		{
 			this.inFavor+=1;
-        	completeArgument();
+        	completeArgument(groupSize);
 		}
     }
 
-    public void completeArgument()
+    public void completeArgument(int groupSize)
     {
-        if(numberOfVotes > (this.getGroupSize() / 2) + 1)
+        if(numberOfVotes > (groupSize / 2) + 1)
         {
             if(inFavor > against)
             {
@@ -46,4 +47,20 @@ public class Vote:Motion
             }
         }
     }
+	public string export()
+	{
+		string result = String.Format("NumberOfVotes:{0}\nInFavor:{1}\nAgainst:{2}\nPassed:{3}\n",
+				this.numberOfVotes,
+				this.inFavor,
+				this.against,
+				this.passed);
+		return result;
+	}
+
+	//Encoder
+	public byte[] encode()
+	{
+		byte[] data = Encoding.UTF8.GetBytes(export());
+		return data;
+	}
 }

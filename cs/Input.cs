@@ -1,8 +1,6 @@
 using System;
 using System.Text;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 public class Input
 {
     public static void Main(string[] args)
@@ -44,41 +42,49 @@ public class Input
             string[] delims = { "@@@" };
             string[] args = interpretString.Split(delims, StringSplitOptions.RemoveEmptyEntries);
             string fileName = dataFolder + args[0] + ".txt";
-            using (FileStream fs = File.Open(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+			Argument argue = null;
+            if(!args[1].Equals("!arg"))
+			{
+				argue = deArgument(fileName);
+			}
+			using (FileStream fs = File.Open(fileName, FileMode.OpenOrCreate, FileAccess.Write))
             {
-				IFormatter formatter = new BinaryFormatter();
+				// IFormatter formatter = new BinaryFormatter();
                 switch (args[1])
                 {
                     case "!arg":
-                        Argument argue = new Argument(args[2], args[3]);
-						formatter.Serialize(fs, argue);
+                        Argument argueDef = new Argument(args[2]);
+						fs.Write(argueDef.encode(),0,argueDef.encode().Length);
                         break;
-                    case "!vote":
-						Argument argue1 = deArgument(fs);
-						argue1.changeMotion(1);
-						formatter.Serialize(fs, argue1);
+                    // case "!vote":
+					// 	argue.changeMotion(1);
+					// 	fs.Write((argue.getMotion() as Vote).encode(),0,(argue.getMotion() as Vote).encode().Length);
+					// 	break;
+					case "!upvote":
+						argue.upvotes += 1;
+						fs.Write(argue.encode(),0,argue.encode().Length);
 						break;
-                    case "!discuss":
-						Argument argue2 = deArgument(fs);
-						argue2.changeMotion(4);
-						Discuss discuss = (Discuss) argue2.getMotion();
-						formatter.Serialize(fs, argue2);
+					case "!downvote":
+						argue.downvotes += 1;
+						fs.Write(argue.encode(),0,argue.encode().Length);
 						break;
-					case "!secondcurrentmotion":
-						Argument argue3 = deArgument(fs);
-						System.Console.WriteLine(argue3.motionCount());
-						System.Console.WriteLine(argue3.getMotion().getMotionTitle());
-						argue3.getMotion().secondMotion();
-						formatter.Serialize(fs, argue3);
-						break;
-					case "!amend":
-						break;
-                    case "!table":
-						Argument argue4 = deArgument(fs);
-						argue4.changeMotion(3);
-						Table table = (Table) argue4.getMotion();
-						formatter.Serialize(fs, argue4);
-						break;
+                    // case "!discuss":
+					// 	argue.changeMotion(4);
+					// 	fs.Write((argue.getMotion() as Discuss).encode(),0,(argue.getMotion() as Discuss).encode().Length);
+					// 	break;
+					// case "!secondcurrentmotion":
+					// 	// System.Console.WriteLine(argue3.getTitle());
+					// 	// System.Console.WriteLine(argue3.motionCount());
+					// 	// System.Console.WriteLine(argue3.getMotion().getMotionTitle());
+					// 	argue.getMotion().secondMotion();
+					// 	// formatter.Serialize(fs, argue3);
+					// 	break;
+					// case "!amend":
+					// 	break;
+                    // case "!table":
+					// 	argue.changeMotion(3);
+					// 	// formatter.Serialize(fs, argue4);
+					// 	break;
                     default:
 						System.Console.WriteLine("default switch");
                         break;
@@ -91,9 +97,13 @@ public class Input
         }
     }
 
-	public static Argument deArgument(FileStream fs)
+	public static Argument deArgument(string path)
 	{
-		IFormatter formatter = new BinaryFormatter();
-		return (Argument) formatter.Deserialize(fs);
+		// IFormatter formatter = new BinaryFormatter();
+		string text = File.ReadAllText(path);
+		string[] delims = { "@@@" };
+        string[] args = text.Split(delims, StringSplitOptions.RemoveEmptyEntries);
+		Argument argue = new Argument(args[0], Convert.ToInt32(args[1]), Convert.ToInt32(args[2]));
+		return argue;
 	}
 }
