@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>SAVvie</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<link rel="stylesheet" href="sticky-footer-navbar.css" media="screen" title="no title">
+
+	<link rel="stylesheet" href="savviestyle.css" media="screen" title="no title">
+
+	<!-- Optional theme -->
+	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"> -->
+
+
+
+
+</head>
+<body>
+
+	<!-- Fixed navbar -->
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">SAVvie</a>
+			</div>
+			<div id="navbar" class="collapse navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="#">Home</a></li>
+					<li><a href="#about">About</a></li>
+					<li><a href="#contact">Contact</a></li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+
+	<!-- Begin page content -->
+	<div class="container">
+		<!-- Begin Snippet -->
+		<div class="well col-md-12 arg-item-container">
+		    <h1>Resolved:</h1>
+		    <div class="well resolution">
+		        <form class="resolution resolution-form" action="#" method="post">
+					<!-- <div class="form-group">
+						<label for="resolutionTitle">Short Title</label>
+						<input type="text" class="form-control" name="name" value="" placeholder="Short Title" id="shortTitle">
+					</div> -->
+					<textarea class="form-control" name="resolution" id="resolutionText" rows="4" placeholder="Resolution"></textarea>
+		            <button type="submit" class="btn btn-primary btn-block resolution-submit" name="resolution-submit">Submit</button>
+		        </form>
+		    </div>
+		    <div class="well motions clearfix">
+		        <h4 class="moveTo">I move to...</h4>
+				<div class="motion-group">
+					<!-- <button type="button" name="table-button" class="btn btn-danger">Table</button> -->
+					<button type="button" name="vote-button" class="btn btn-success">Vote</button>
+					<!-- <button type="button" name="amend-button" class="btn btn-warning">Amend</button>
+					<button type="button" name="discuss-button" class="btn btn-primary">Discuss</button> -->
+				</div>
+		    </div>
+			<div class="well vote clearfix">
+				<button type="submit" class="btn btn-success btn-block resolution-submit" name="resolution-submit">Yea</button>
+				<button type="submit" class="btn btn-danger btn-block resolution-submit" name="resolution-submit">Nay</button>
+			</div>
+		</div>
+		<!-- End Snippet -->
+
+
+
+
+
+	</div>
+
+	<footer class="footer">
+		<div class="container">
+			<p class="text-muted">Place sticky footer content here.</p>
+		</div>
+	</footer>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+</html>
