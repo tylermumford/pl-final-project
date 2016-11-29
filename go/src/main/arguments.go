@@ -1,3 +1,11 @@
+/*
+*	The code in this file is meant to work with
+*		our C# files to store arguments and comments.
+*
+*	makeCmd is the backbone. All other functions use
+*		it to communicate with C#.
+ */
+
 package main
 
 import (
