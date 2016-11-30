@@ -75,6 +75,14 @@ func main() {
 		saveNewArgument(descr)
 	})
 
+	http.HandleFunc("/signup/submit/", func(w http.ResponseWriter, r *http.Request) {
+		//if(user == User{})
+	})
+
+	http.HandleFunc("/signup/", func(w http.ResponseWriter, r *http.Request) {
+		//renderTemplate(w, "signup.html", nil)
+	})
+
 	http.ListenAndServe("localhost:8000", nil)
 }
 
