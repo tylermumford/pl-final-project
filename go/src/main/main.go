@@ -47,6 +47,17 @@ func main() {
 
 	})
 
+	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
+		// TODO: Require user to be logged in.
+		renderTemplate(w, "create.html", nil)
+	})
+
+	http.HandleFunc("/create-submit", func(w http.ResponseWriter, r *http.Request) {
+		// TODO: Require user to be logged in.
+		descr := r.PostFormValue("descr")
+		saveNewArgument(descr)
+	})
+
 	http.HandleFunc("/upvote/", func(w http.ResponseWriter, r *http.Request) {
 		// TODO: Require user to be logged in.
 		if argID, found := findArgIDInPath(r.URL.Path); found {
@@ -68,11 +79,6 @@ func main() {
 			addHeader(w)
 			fmt.Fprintf(w, "Does not exist")
 		}
-	})
-
-	http.HandleFunc("/create/", func(w http.ResponseWriter, r *http.Request) {
-		descr := r.PostFormValue("description")
-		saveNewArgument(descr)
 	})
 
 	http.HandleFunc("/signup/submit/", func(w http.ResponseWriter, r *http.Request) {
