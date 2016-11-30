@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 	"regexp"
 )
@@ -106,4 +107,20 @@ func openBody(w http.ResponseWriter) {
 func closeBody(w http.ResponseWriter) {
 	fmt.Fprint(w, "</div>")
 
+}
+
+var allTemplates *template.Template
+
+func loadAllTemplates() {
+	allTemplates = template.Must(template.ParseGlob("/vagrant/templates/*"))
+}
+
+func renderTemplate(w http.ResponseWriter, templateName string, data interface{}) {
+	if allTemplates == nil {
+		loadAllTemplates()
+	}
+	err := allTemplates.ExecuteTemplate(w, templateName, data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
