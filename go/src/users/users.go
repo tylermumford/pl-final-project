@@ -105,6 +105,9 @@ func compareSlice(a, b []byte) bool {
 
 func makeStruct(email string) (user User) {
 	f, err := os.Open(data_folder + email + ".txt")
+	if err == os.ErrNotExist {
+		return User{}
+	}
 	check(err)
 
 	b := bufio.NewReader(f)
