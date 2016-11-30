@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"regexp"
+	"users"
 )
 
 func main() {
@@ -77,11 +78,27 @@ func main() {
 	})
 
 	http.HandleFunc("/signup/submit/", func(w http.ResponseWriter, r *http.Request) {
-		//if(user == User{})
+		fname := r.PostFormValue("fname")
+		lname := r.PostFormValue("lname")
+		email := r.PostFormValue("email")
+		pwd := r.PostFormValue("pwd")
+		confpwd := r.PostFormValue("confpwd")
+		if confpwd == pwd {
+			//something to Give an error and return them to the signup page
+		}
+
+		u := users.GetUser(email)
+		e := users.User{}
+
+		if u.Name == e.Name {
+			users.NewUser(fname+lname, email, pwd)
+		} else {
+			//something to Give an error and return them to the signup page
+		}
 	})
 
 	http.HandleFunc("/signup/", func(w http.ResponseWriter, r *http.Request) {
-		//renderTemplate(w, "signup.html", nil)
+		renderTemplate(w, "signup.html", nil)
 	})
 
 	http.ListenAndServe("localhost:8000", nil)
