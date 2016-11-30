@@ -24,16 +24,10 @@ func main() {
 	})
 
 	http.HandleFunc("/args/", func(w http.ResponseWriter, r *http.Request) {
-		addHeader(w)
 
 		if argID, found := findArgIDInPath(r.URL.Path); found {
-			fmt.Fprintf(w, "<h1>Argument %v:</h1>", argID)
-			openBody(w)
-			displayArg(w, argID)
-			fmt.Fprintf(w, "<p><a href='/upvote/%v' class='button' style='float:right'>Upvote</a></p>", argID)
-			fmt.Fprintf(w, "<p><a href='/downvote/%v' class='button alert' style='float:right'>Downvote</a></p>", argID)
-			closeBody(w)
-			return
+			a := getArg(argID)
+			renderTemplate(w, "args.html", a)
 		}
 
 		// fmt.Fprint(w, "<h1>All Arguments</h1>")
@@ -54,8 +48,9 @@ func main() {
 	})
 
 	http.HandleFunc("/upvote/", func(w http.ResponseWriter, r *http.Request) {
+		// TODO: Require user to be logged in.
 		if argID, found := findArgIDInPath(r.URL.Path); found {
-			go upvote(argID)
+			upvote(argID)
 			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
 		} else {
 			addHeader(w)
@@ -65,8 +60,9 @@ func main() {
 	})
 
 	http.HandleFunc("/downvote/", func(w http.ResponseWriter, r *http.Request) {
+		// TODO: Require user to be logged in.
 		if argID, found := findArgIDInPath(r.URL.Path); found {
-			go downvote(argID)
+			downvote(argID)
 			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
 		} else {
 			addHeader(w)
@@ -99,12 +95,6 @@ func findArgIDInPath(p string) (string, bool) {
 	}
 
 	return sub[1], true
-}
-
-func displayArg(w http.ResponseWriter, argID string) {
-	arg := getArg(argID)
-
-	fmt.Fprintf(w, "<div class='callout'><h2>%v</h2><ul><li>Score: %v</li><li>Upvotes: %v</li><li>Downvotes: %v</li></div>", arg.description, arg.upvotes-arg.downvotes, arg.upvotes, arg.downvotes)
 }
 
 func addHeader(w http.ResponseWriter) {
