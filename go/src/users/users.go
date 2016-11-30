@@ -1,3 +1,15 @@
+/*
+* Written by Katrina Mehring as part of Code Camp and final project
+*   for a Programming Languages class.
+*
+*	This package is used by the main package. It is used to
+*		hash user passwords, verify user login information,
+*		and store user information. Because of hashing issues
+*		at Code Camp, the old hash has been commented out, and 
+*		a new hash is being used. The code is left here so that
+*		it can hopefully be used in future implementations.
+*/
+
 package users
 
 import (
