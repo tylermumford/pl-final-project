@@ -16,8 +16,11 @@ func main() {
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
-		addHeader(w)
-		fmt.Fprint(w, "<p>Hello from <strong>Go</strong></p>")
+		renderTemplate(w, "index.html", nil)
+	})
+
+	http.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
+		renderTemplate(w, "about.html", nil)
 	})
 
 	http.HandleFunc("/args/", func(w http.ResponseWriter, r *http.Request) {
