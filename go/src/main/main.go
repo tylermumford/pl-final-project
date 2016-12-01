@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"regexp"
@@ -17,64 +16,60 @@ func main() {
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
-		addHeader(w)
-		fmt.Fprint(w, "<p>Hello from <strong>Go</strong></p>")
+		renderTemplate(w, "index.html", struct{ PageTitle string }{"Home"})
+	})
+
+	http.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
+		renderTemplate(w, "about.html", struct{ PageTitle string }{"About the Site"})
 	})
 
 	http.HandleFunc("/args/", func(w http.ResponseWriter, r *http.Request) {
-		addHeader(w)
-
-		if argID, found := findArgIDInPath(r.URL.Path); found {
-			fmt.Fprintf(w, "<h1>Argument %v:</h1>", argID)
-			openBody(w)
-			displayArg(w, argID)
-			fmt.Fprintf(w, "<p><a href='/upvote/%v' class='button' style='float:right'>Upvote</a></p>", argID)
-			fmt.Fprintf(w, "<p><a href='/downvote/%v' class='button alert' style='float:right'>Downvote</a></p>", argID)
-			closeBody(w)
+		argID, found := findArgIDInPath(r.URL.Path)
+		a := getArg(argID)
+		if !found || a.ID == "" {
+			w.WriteHeader(http.StatusNotFound)
+			renderTemplate(w, "error.html", struct{ PageTitle string }{"Not Found"})
 			return
 		}
 
-		// fmt.Fprint(w, "<h1>All Arguments</h1>")
+		data := struct {
+			PageTitle string
+			argument
+		}{a.Description, a}
+		renderTemplate(w, "args.html", data)
+	})
 
-		// //	TODO: Load arguments from Nick
-		// arguments := loadArguments(0)
+	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
+		// TODO: Require user to be logged in.
+		renderTemplate(w, "create.html", struct{ PageTitle string }{"Create"})
+	})
 
-		// if len(arguments) == 0 {
-		// 	fmt.Fprint(w, "<p>No arguments</p>")
-		// } else {
-		// 	fmt.Fprint(w, "<ul>")
-		// 	for _, a := range arguments {
-		// 		fmt.Fprintf(w, "<li>%v</li>", a.title)
-		// 	}
-		// 	fmt.Fprintf(w, "</ul>")
-		// }
-
+	http.HandleFunc("/create-submit", func(w http.ResponseWriter, r *http.Request) {
+		// TODO: Require user to be logged in.
+		descr := r.PostFormValue("descr")
+		saveNewArgument(descr)
 	})
 
 	http.HandleFunc("/upvote/", func(w http.ResponseWriter, r *http.Request) {
+		// TODO: Require user to be logged in.
 		if argID, found := findArgIDInPath(r.URL.Path); found {
-			go upvote(argID)
+			upvote(argID)
 			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
 		} else {
-			addHeader(w)
-			fmt.Fprintf(w, "Not found...")
+			http.Redirect(w, r, "/error", http.StatusNotFound)
 		}
 
 	})
 
 	http.HandleFunc("/downvote/", func(w http.ResponseWriter, r *http.Request) {
+		// TODO: Require user to be logged in.
 		if argID, found := findArgIDInPath(r.URL.Path); found {
-			go downvote(argID)
+			downvote(argID)
 			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
 		} else {
-			addHeader(w)
-			fmt.Fprintf(w, "Does not exist")
+			w.WriteHeader(http.StatusNotFound)
+			renderTemplate(w, "error.html", struct{ PageTitle string }{"Error"})
 		}
-	})
-
-	http.HandleFunc("/create/", func(w http.ResponseWriter, r *http.Request) {
-		descr := r.PostFormValue("description")
-		saveNewArgument(descr)
 	})
 
 	http.HandleFunc("/signup/submit/", func(w http.ResponseWriter, r *http.Request) {
@@ -101,6 +96,10 @@ func main() {
 		renderTemplate(w, "signup.html", nil)
 	})
 
+	http.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
+		renderTemplate(w, "error.html", nil)
+	})
+
 	http.ListenAndServe("localhost:8000", nil)
 }
 
@@ -115,25 +114,6 @@ func findArgIDInPath(p string) (string, bool) {
 	return sub[1], true
 }
 
-func displayArg(w http.ResponseWriter, argID string) {
-	arg := getArg(argID)
-
-	fmt.Fprintf(w, "<div class='callout'><h2>%v</h2><ul><li>Score: %v</li><li>Upvotes: %v</li><li>Downvotes: %v</li></div>", arg.description, arg.upvotes-arg.downvotes, arg.upvotes, arg.downvotes)
-}
-
-func addHeader(w http.ResponseWriter) {
-	fmt.Fprint(w, "<head><link href='https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.4/foundation.css' rel='stylesheet'><style>.body{max-width:600px;margin: 20 auto;}</style></head>")
-}
-
-func openBody(w http.ResponseWriter) {
-	fmt.Fprint(w, "<div class='body'>")
-}
-
-func closeBody(w http.ResponseWriter) {
-	fmt.Fprint(w, "</div>")
-
-}
-
 var allTemplates *template.Template
 
 func loadAllTemplates() {
@@ -141,9 +121,7 @@ func loadAllTemplates() {
 }
 
 func renderTemplate(w http.ResponseWriter, templateName string, data interface{}) {
-	if allTemplates == nil {
-		loadAllTemplates()
-	}
+	loadAllTemplates()
 	err := allTemplates.ExecuteTemplate(w, templateName, data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -1,0 +1,24 @@
+<html>
+	<head>
+		{{template "section-head.html" .}}
+	</head>
+	<body>
+		{{template "section-nav.html" .}}
+
+		<div class="container">
+			<h1>Create a new argument</h1>
+			<form action="/create-submit" method="post">
+				<div class="form-group">
+					<label for="descr">Description:</label>
+					<input type="text" class="form-control" id="descr" name="descr">
+				</div>
+				<div class="form-group">
+					<input type="submit">
+				</div>
+
+			</form>
+		</div>
+
+		{{template "section-footer.html" .}}
+	</body>
+</html>
