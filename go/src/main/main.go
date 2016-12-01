@@ -64,8 +64,7 @@ func main() {
 			upvote(argID)
 			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
 		} else {
-			addHeader(w)
-			fmt.Fprintf(w, "Not found...")
+			http.Redirect(w, r, "/error", http.StatusNotFound)
 		}
 
 	})
@@ -76,8 +75,8 @@ func main() {
 			downvote(argID)
 			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
 		} else {
-			addHeader(w)
-			fmt.Fprintf(w, "Does not exist")
+			w.WriteHeader(http.StatusNotFound)
+			renderTemplate(w, "error.html", struct{ PageTitle string }{"Error"})
 		}
 	})
 
@@ -87,6 +86,10 @@ func main() {
 
 	http.HandleFunc("/signup/", func(w http.ResponseWriter, r *http.Request) {
 		//renderTemplate(w, "signup.html", nil)
+	})
+
+	http.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
+		renderTemplate(w, "error.html", nil)
 	})
 
 	http.ListenAndServe("localhost:8000", nil)
@@ -123,9 +126,7 @@ func loadAllTemplates() {
 }
 
 func renderTemplate(w http.ResponseWriter, templateName string, data interface{}) {
-	if allTemplates == nil {
 		loadAllTemplates()
-	}
 	err := allTemplates.ExecuteTemplate(w, templateName, data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
