@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"regexp"
@@ -24,27 +23,19 @@ func main() {
 	})
 
 	http.HandleFunc("/args/", func(w http.ResponseWriter, r *http.Request) {
-
-		if argID, found := findArgIDInPath(r.URL.Path); found {
-			a := getArg(argID)
-			renderTemplate(w, "args.html", a)
+		argID, found := findArgIDInPath(r.URL.Path)
+		a := getArg(argID)
+		if !found || a.ID == "" {
+			w.WriteHeader(http.StatusNotFound)
+			renderTemplate(w, "error.html", struct{ PageTitle string }{"Not Found"})
+			return
 		}
 
-		// fmt.Fprint(w, "<h1>All Arguments</h1>")
-
-		// //	TODO: Load arguments from Nick
-		// arguments := loadArguments(0)
-
-		// if len(arguments) == 0 {
-		// 	fmt.Fprint(w, "<p>No arguments</p>")
-		// } else {
-		// 	fmt.Fprint(w, "<ul>")
-		// 	for _, a := range arguments {
-		// 		fmt.Fprintf(w, "<li>%v</li>", a.title)
-		// 	}
-		// 	fmt.Fprintf(w, "</ul>")
-		// }
-
+		data := struct {
+			PageTitle string
+			argument
+		}{a.Description, a}
+		renderTemplate(w, "args.html", data)
 	})
 
 	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +104,7 @@ func loadAllTemplates() {
 }
 
 func renderTemplate(w http.ResponseWriter, templateName string, data interface{}) {
-		loadAllTemplates()
+	loadAllTemplates()
 	err := allTemplates.ExecuteTemplate(w, templateName, data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
