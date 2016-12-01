@@ -106,19 +106,6 @@ func findArgIDInPath(p string) (string, bool) {
 	return sub[1], true
 }
 
-func addHeader(w http.ResponseWriter) {
-	fmt.Fprint(w, "<head><link href='https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.4/foundation.css' rel='stylesheet'><style>.body{max-width:600px;margin: 20 auto;}</style></head>")
-}
-
-func openBody(w http.ResponseWriter) {
-	fmt.Fprint(w, "<div class='body'>")
-}
-
-func closeBody(w http.ResponseWriter) {
-	fmt.Fprint(w, "</div>")
-
-}
-
 var allTemplates *template.Template
 
 func loadAllTemplates() {
