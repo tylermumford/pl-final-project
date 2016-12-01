@@ -2,12 +2,20 @@ package main
 
 import (
 	"html/template"
+	"math/rand"
 	"net/http"
 	"regexp"
+	"time"
 	"users"
 )
 
 func main() {
+
+	// General initialization
+	func() {
+		seconds := time.Now().Second()
+		rand.Seed(int64(seconds))
+	}()
 
 	// Setting up the controller
 
@@ -47,7 +55,8 @@ func main() {
 	http.HandleFunc("/create-submit", func(w http.ResponseWriter, r *http.Request) {
 		// TODO: Require user to be logged in.
 		descr := r.PostFormValue("descr")
-		saveNewArgument(descr)
+		newArg := saveNewArgument(descr)
+		http.Redirect(w, r, "/args/"+newArg, http.StatusFound)
 	})
 
 	http.HandleFunc("/upvote/", func(w http.ResponseWriter, r *http.Request) {
