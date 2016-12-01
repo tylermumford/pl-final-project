@@ -53,11 +53,16 @@ func getArg(id string) argument {
 	str, _ := c.Output()
 	parts := strings.Split(string(str), "@@@")
 
+	// Should consist of description, upvotes, and downvotes.
+	if len(parts) != 3 {
+		return argument{}
+	}
+
 	u, _ := strconv.Atoi(strings.TrimSpace(parts[1]))
 	d, _ := strconv.Atoi(strings.TrimSpace(parts[2]))
 	return argument{
 		ID:          id,
-		Description: parts[0][1 : len(parts[0])-1],
+		Description: parts[0],
 		Upvotes:     u,
 		Downvotes:   d,
 	}
