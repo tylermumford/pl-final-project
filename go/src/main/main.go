@@ -16,11 +16,11 @@ func main() {
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
-		renderTemplate(w, "index.html", nil)
+		renderTemplate(w, "index.html", struct{ PageTitle string }{"Home"})
 	})
 
 	http.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
-		renderTemplate(w, "about.html", nil)
+		renderTemplate(w, "about.html", struct{ PageTitle string }{"About the Site"})
 	})
 
 	http.HandleFunc("/args/", func(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +49,7 @@ func main() {
 
 	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
 		// TODO: Require user to be logged in.
-		renderTemplate(w, "create.html", nil)
+		renderTemplate(w, "create.html", struct{ PageTitle string }{"Create"})
 	})
 
 	http.HandleFunc("/create-submit", func(w http.ResponseWriter, r *http.Request) {
