@@ -1,7 +1,6 @@
 package main
 
 import (
-	"html/template"
 	"math/rand"
 	"net/http"
 	"regexp"
@@ -40,10 +39,9 @@ func main() {
 			return
 		}
 
-		data := struct {
-			PageTitle string
-			argument
-		}{a.Description, a}
+		data := newTemplateData()
+		data.PageTitle = a.Description
+		data.Key["argument"] = a
 		renderTemplate(w, "args.html", data)
 	})
 
@@ -137,26 +135,4 @@ func findArgIDInPath(p string) (string, bool) {
 	}
 
 	return sub[1], true
-}
-
-var allTemplates *template.Template
-
-func loadAllTemplates() {
-	allTemplates = template.Must(template.ParseGlob("/vagrant/templates/*"))
-}
-
-func renderTemplate(w http.ResponseWriter, templateName string, data interface{}) {
-	loadAllTemplates()
-	err := allTemplates.ExecuteTemplate(w, templateName, data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
-
-// pTitle is a helper function that returns a data struct that can be
-// passed to `renderTemplate` to set the page title.
-func pTitle(title string) interface{} {
-	return struct {
-		PageTitle string
-	}{title}
 }

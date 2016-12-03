@@ -6,20 +6,20 @@
 		{{template "section-nav.html"}}
 
 		<div class="container">
-			<h1>Argument No. {{.ID}}</h1>
+			<h1>Argument No. {{.Key.argument.ID}}</h1>
 			<div class="well">
 				<p class="h3">
-					{{.Description}}
+					{{.Key.argument.Description}}
 				</p>
 				<ul>
-					<li>Score: {{.Score}}</li>
-					<li>Upvotes: {{.Upvotes}}</li>
-					<li>Downvotes: {{.Downvotes}}</li>
+					<li>Score: {{.Key.argument.Score}}</li>
+					<li>Upvotes: {{.Key.argument.Upvotes}}</li>
+					<li>Downvotes: {{.Key.argument.Downvotes}}</li>
 				</ul>
 			</div>
 			<div class="btn-group">
-				<a href="/upvote/{{.ID}}" class="btn btn-success">Upvote this argument</a>
-				<a href="/downvote/{{.ID}}" class="btn btn-danger">Downvote this argument</a>
+				<a href="/upvote/{{.Key.argument.ID}}" class="btn btn-success">Upvote this argument</a>
+				<a href="/downvote/{{.Key.argument.ID}}" class="btn btn-danger">Downvote this argument</a>
 			</div>
 		</div>
 
