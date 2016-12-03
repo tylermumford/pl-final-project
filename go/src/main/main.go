@@ -24,11 +24,11 @@ func main() {
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
-		renderTemplate(w, "index.html", struct{ PageTitle string }{"Home"})
+		renderTemplate(w, "index.html", pTitle("Home"))
 	})
 
 	http.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
-		renderTemplate(w, "about.html", struct{ PageTitle string }{"About the Site"})
+		renderTemplate(w, "about.html", pTitle("About the Site"))
 	})
 
 	http.HandleFunc("/args/", func(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +49,7 @@ func main() {
 
 	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
 		// TODO: Require user to be logged in.
-		renderTemplate(w, "create.html", struct{ PageTitle string }{"Create"})
+		renderTemplate(w, "create.html", pTitle("Create an argument"))
 	})
 
 	http.HandleFunc("/create-submit", func(w http.ResponseWriter, r *http.Request) {
@@ -77,7 +77,7 @@ func main() {
 			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
 		} else {
 			w.WriteHeader(http.StatusNotFound)
-			renderTemplate(w, "error.html", struct{ PageTitle string }{"Error"})
+			renderTemplate(w, "error.html", pTitle("Error"))
 		}
 	})
 
@@ -135,4 +135,12 @@ func renderTemplate(w http.ResponseWriter, templateName string, data interface{}
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+	}
+
+// pTitle is a helper function that returns a data struct that can be
+// passed to `renderTemplate` to set the page title.
+func pTitle(title string) interface{} {
+	return struct {
+		PageTitle string
+	}{title}
 }
