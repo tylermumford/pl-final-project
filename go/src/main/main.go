@@ -102,7 +102,23 @@ func main() {
 	})
 
 	http.HandleFunc("/signup/", func(w http.ResponseWriter, r *http.Request) {
-		renderTemplate(w, "signup.html", nil)
+		renderTemplate(w, "signup.html", pTitle("Sign up"))
+	})
+
+	http.HandleFunc("/login/submit/", func(w http.ResponseWriter, r *http.Request) {
+		email := r.PostFormValue("email")
+		pwd := r.PostFormValue("pwd")
+
+		correct := users.Auth(email, pwd)
+		if !correct {
+			http.Redirect(w, r, "/login", http.StatusNotFound)
+		}
+
+		// TODO: Set the user as logged in. Store with a cookie?
+	})
+
+	http.HandleFunc("/login/", func(w http.ResponseWriter, r *http.Request) {
+		renderTemplate(w, "login.html", pTitle("Log in"))
 	})
 
 	http.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
@@ -135,7 +151,7 @@ func renderTemplate(w http.ResponseWriter, templateName string, data interface{}
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	}
+}
 
 // pTitle is a helper function that returns a data struct that can be
 // passed to `renderTemplate` to set the page title.

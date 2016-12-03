@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{{template "section-head.html" .}}
+	</head>
+	<body>
+		{{template "section-nav.html" .}}
+
+		<div class="container">
+			<h1>Log in</h1>
+			<form method="post" action="/login/submit/">
+				<div class="form-group">
+					<label for="email">Email Address:</label>
+					<input type="text" id="email" class="form-control" name="email">
+				</div>
+				<div class="form-group">
+					<label for="pwd">Password:</label>
+					<input type="password" id="pwd" class="form-control" name="pwd">
+				</div>
+				<input type="submit" class="btn btn-success" value="Log in">
+			</form>
+		</div>
+
+		{{template "section-footer.html" .}}
+	</body>
+</html>
