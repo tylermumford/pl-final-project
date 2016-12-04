@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"regexp"
@@ -78,18 +79,21 @@ func main() {
 		email := r.PostFormValue("email")
 		pwd := r.PostFormValue("pwd")
 		confpwd := r.PostFormValue("confpwd")
-		if confpwd == pwd {
+		if confpwd != pwd {
 			//something to Give an error and return them to the signup page
+			fmt.Fprintln(w, "Those 2 passwords weren't the same. Please try again.")
 		}
 
 		u := users.GetUser(email)
 		e := users.User{}
 
-		if u.Name == e.Name {
-			users.NewUser(fname+lname, email, pwd)
-		} else {
-			//something to Give an error and return them to the signup page
+		if u.Email != e.Email {
+			// User already exists. Log in.
+			// print ("That user already exist. Please use the login link to login")
+			fmt.Fprintln(w, "We already have a user with that address. Please login.")
+			return
 		}
+		users.NewUser(fname+lname, email, pwd)
 	})
 
 	http.HandleFunc("/signup/", func(w http.ResponseWriter, r *http.Request) {
