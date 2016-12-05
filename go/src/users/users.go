@@ -22,6 +22,7 @@ import (
 	//"io"
 	//"fmt"
 	"crypto/sha256"
+	"log"
 )
 
 const (
@@ -92,6 +93,9 @@ func pHash(pword string) (hash []byte) {
 // and password input.
 func Auth(email, pword string) bool {
 	user := makeStruct(email)
+	if user.Email == "" {
+		return false
+	}
 
 	password := pHash(pword)
 
@@ -122,7 +126,8 @@ func compareSlice(a, b []byte) bool {
 
 func makeStruct(email string) (user User) {
 	f, err := os.Open(dataFolder + email + ".txt")
-	if err == os.ErrNotExist {
+	if err != nil {
+		log.Println("Error making User struct:", err)
 		return User{}
 	}
 	check(err)
