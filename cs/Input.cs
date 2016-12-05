@@ -37,7 +37,6 @@ public class Input
                     case "create":
                         Argument argueDef = new Argument(args[2]);
 						fs.Write(argueDef.encode(),0,argueDef.encode().Length);
-						Console.Error.WriteLine(argueDef.export());
                         break;
                     // case "!vote":
 					// 	argue.changeMotion(1);
