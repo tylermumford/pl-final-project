@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"net/http"
 	"regexp"
@@ -79,13 +80,13 @@ func main() {
 		}
 	})
 
-	http.HandleFunc("/signup/submit/", func(w http.ResponseWriter, r *http.Request) {
-		fname := r.PostFormValue("fname")
-		lname := r.PostFormValue("lname")
-		email := r.PostFormValue("email")
-		pwd := r.PostFormValue("pwd")
-		confpwd := r.PostFormValue("confpwd")
-		if confpwd == pwd {
+	http.HandleFunc("/signup-submit", func(w http.ResponseWriter, r *http.Request) {
+		fname := r.FormValue("fname")
+		lname := r.FormValue("lname")
+		email := r.FormValue("email")
+		pwd := r.FormValue("pwd")
+		confpwd := r.FormValue("confpwd")
+		if confpwd != pwd {
 			//something to Give an error and return them to the signup page
 		}
 
@@ -99,7 +100,7 @@ func main() {
 		}
 	})
 
-	http.HandleFunc("/signup/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
 		renderTemplate(w, "signup.html", pTitle("Sign up"))
 	})
 
@@ -141,4 +142,28 @@ func findArgIDInPath(p string) (string, bool) {
 	}
 
 	return sub[1], true
+}
+
+const userCookieName = "email"
+
+// setLoggedIn marks the current user as "logged in" by storing their
+// email address in a cookie.
+func setLoggedIn(w http.ResponseWriter, u users.User) {
+	c := http.Cookie{
+		Name:   userCookieName,
+		Value:  u.Email,
+		Secure: false,
+	}
+	http.SetCookie(w, &c)
+}
+
+// getLoggedIn returns the User associated with the given request, based
+// on a cookie. If the given request did not come from a logged-in user
+// (or if the claimed user does not exist), it returns an empty User.
+func getLoggedIn(r http.Request) users.User {
+	c, err := r.Cookie(userCookieName)
+	if err != nil {
+		return users.User{}
+	}
+	return users.GetUser(c.Value)
 }
