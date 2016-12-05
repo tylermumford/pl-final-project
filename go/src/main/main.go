@@ -103,20 +103,26 @@ func main() {
 		renderTemplate(w, "signup.html", pTitle("Sign up"))
 	})
 
-	http.HandleFunc("/login/submit/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/login/", func(w http.ResponseWriter, r *http.Request) {
 		email := r.PostFormValue("email")
 		pwd := r.PostFormValue("pwd")
 
-		correct := users.Auth(email, pwd)
-		if !correct {
-			http.Redirect(w, r, "/login", http.StatusNotFound)
+		if email == "" {
+			renderTemplate(w, "login.html", pTitle("Log in"))
+			return
 		}
 
-		// TODO: Set the user as logged in. Store with a cookie?
-	})
+		correct := users.Auth(email, pwd)
+		if !correct {
+			data := newTemplateData()
+			data.PageTitle = "Log in"
+			data.Key["lastAttempt"] = email
+			renderTemplate(w, "login.html", data)
+			return
+		}
 
-	http.HandleFunc("/login/", func(w http.ResponseWriter, r *http.Request) {
-		renderTemplate(w, "login.html", pTitle("Log in"))
+		setLoggedIn(w, users.GetUser(email))
+		fmt.Fprintf(w, "Logged in as %v", email)
 	})
 
 	http.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
