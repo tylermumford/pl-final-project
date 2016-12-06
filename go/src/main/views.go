@@ -51,3 +51,7 @@ func pTitle(title string) interface{} {
 	t.PageTitle = title
 	return t
 }
+
+func htmlstr(s string) template.HTML {
+	return template.HTML(s)
+}

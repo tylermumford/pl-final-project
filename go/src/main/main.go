@@ -50,19 +50,26 @@ func main() {
 	})
 
 	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Require user to be logged in.
-		renderTemplate(w, "create.html", pTitle("Create an argument"))
+		if !requireLoggedIn(w, r) {
+			return
+		}
+		data := newTemplateData("Create an argument", getLoggedIn(r))
+		renderTemplate(w, "create.html", data)
 	})
 
 	http.HandleFunc("/create-submit", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Require user to be logged in.
+		if !requireLoggedIn(w, r) {
+			return
+		}
 		descr := r.PostFormValue("descr")
 		newArg := saveNewArgument(descr)
 		http.Redirect(w, r, "/args/"+newArg, http.StatusFound)
 	})
 
 	http.HandleFunc("/upvote/", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Require user to be logged in.
+		if !requireLoggedIn(w, r) {
+			return
+		}
 		if argID, found := findArgIDInPath(r.URL.Path); found {
 			upvote(argID)
 			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
@@ -73,7 +80,9 @@ func main() {
 	})
 
 	http.HandleFunc("/downvote/", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Require user to be logged in.
+		if !requireLoggedIn(w, r) {
+			return
+		}
 		if argID, found := findArgIDInPath(r.URL.Path); found {
 			downvote(argID)
 			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
@@ -196,5 +205,13 @@ func getLoggedIn(r *http.Request) users.User {
 	}
 	return users.GetUser(c.Value)
 }
-}
+
+func requireLoggedIn(w http.ResponseWriter, r *http.Request) bool {
+	if getLoggedIn(r).Email == "" {
+		data := newTemplateData("Error", users.User{})
+		data.Key["errorMessage"] = htmlstr(`You must <a href="/login">Log in</a> to access this page.`)
+		renderTemplate(w, "error.html", data)
+		return false
+	}
+	return true
 }
