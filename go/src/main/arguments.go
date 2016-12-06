@@ -53,9 +53,14 @@ func makeCmd(filename string, sCmd string, descr string) exec.Cmd {
 	return result
 }
 
+// saveNewArgument takes an argument description and saves it as a new argument.
+// It returns the ID of the new argument.
 func saveNewArgument(descr string) string {
-	// Don't include a file extension.
 	fn := fmt.Sprintf("%0d", rand.Intn(99999))
+	for getArg(fn).ID != "" {
+		// Loop until we get a non-existing argument ID
+		fn = fmt.Sprintf("%0d", rand.Intn(99999))
+	}
 	cmd := makeCmd(fn, "create", descr)
 
 	_, err := cmd.Output()
