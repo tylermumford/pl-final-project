@@ -3,7 +3,7 @@
 		{{template "section-head.html" .}}
 	</head>
 	<body>
-		{{template "section-nav.html"}}
+		{{template "section-nav.html" .}}
 
 		<div class="container">
 			<h1>Argument No. {{.Key.argument.ID}}</h1>
@@ -17,12 +17,36 @@
 					<li>Downvotes: {{.Key.argument.Downvotes}}</li>
 				</ul>
 			</div>
+			
 			<div class="btn-group">
 				<a href="/upvote/{{.Key.argument.ID}}" class="btn btn-success">Upvote this argument</a>
 				<a href="/downvote/{{.Key.argument.ID}}" class="btn btn-danger">Downvote this argument</a>
 			</div>
+
+			<hr>
+
+			{{range .Key.comments}}
+			<p>
+				{{.Body}} <br>
+				<span class="text-muted">-- {{.User}} -- {{.Date}}</span>
+			</p>
+			{{end}}
+
+			{{if .Key.comments}}<hr>{{end}}
+
+			{{if .User.Email}}
+			<form action="/comment/{{.Key.argument.ID}}" method="POST">
+				<div class="form-group">
+					<label for="commentBody">Comment</label>
+					<textarea name="commentBody" id="commentBody" rows="4" class="form-control"></textarea>
+				</div>
+				<input type="submit" class="btn btn-info" value="Submit">
+			</form>
+			{{else}}
+			<p>Logged-in users can comment on arguments.</p>
+			{{end}}
 		</div>
 
-		{{template "section-footer.html"}}
+		{{template "section-footer.html" .}}
 	</body>
 </html>

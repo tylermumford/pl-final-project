@@ -130,6 +130,7 @@ func makeStruct(email string) (user User) {
 		log.Println("Error making User struct:", err)
 		return User{}
 	}
+	defer f.Close()
 	check(err)
 
 	b := bufio.NewReader(f)

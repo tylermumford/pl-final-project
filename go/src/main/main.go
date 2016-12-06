@@ -1,6 +1,7 @@
 package main
 
 import (
+	"comments"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -40,12 +41,13 @@ func main() {
 		a := getArg(argID)
 		if !found || a.ID == "" {
 			w.WriteHeader(http.StatusNotFound)
-			renderTemplate(w, "error.html", struct{ PageTitle string }{"Not Found"})
+			renderTemplate(w, "error.html", pTitle("Not found"))
 			return
 		}
 
 		data := newTemplateData(a.Description, getLoggedIn(r))
 		data.Key["argument"] = a
+		data.Key["comments"] = comments.Load(a.ID)
 		renderTemplate(w, "args.html", data)
 	})
 
@@ -90,6 +92,29 @@ func main() {
 			w.WriteHeader(http.StatusNotFound)
 			renderTemplate(w, "error.html", pTitle("Error"))
 		}
+	})
+
+	http.HandleFunc("/comment/", func(w http.ResponseWriter, r *http.Request) {
+		if !requireLoggedIn(w, r) {
+			return
+		}
+		data := newTemplateData("Error", getLoggedIn(r))
+
+		argID, found := findArgIDInPath(r.URL.Path)
+		if !found {
+			renderTemplate(w, "error.html", data)
+			return
+		}
+
+		err := comments.Save(getLoggedIn(r).Email, argID, r.FormValue("commentBody"))
+		if err != nil {
+			data := newTemplateData("Error", getLoggedIn(r))
+			data.Key["errorMessage"] = err.Error()
+			renderTemplate(w, "error.html", data)
+			return
+		}
+
+		http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
 	})
 
 	http.HandleFunc("/signup-submit", func(w http.ResponseWriter, r *http.Request) {
