@@ -148,7 +148,7 @@ func makeStruct(email string) (user User) {
 	pwd, _, err := b.ReadLine()
 	check(err)
 
-	user = User{email, name, pwd, date}
+	user = User{name, email, pwd, date}
 
 	return
 }
