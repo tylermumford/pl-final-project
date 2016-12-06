@@ -89,21 +89,31 @@ func main() {
 		email := r.FormValue("email")
 		pwd := r.FormValue("pwd")
 		confpwd := r.FormValue("confpwd")
-		if confpwd != pwd {
-			//something to Give an error and return them to the signup page
+		var problems = make([]string, 0)
+		if fname == "" || lname == "" {
+			problems = append(problems, "Please provide a name.")
+		}
+		if email == "" {
+			problems = append(problems, "Please provide an email address.")
+		}
+		if pwd != confpwd {
+			problems = append(problems, "Passwords do not match.")
+		}
+		if len(problems) == 0 && users.GetUser(email).Email != "" {
+			problems = append(problems, "That user already exists.")
 		}
 
-		u := users.GetUser(email)
-		e := users.User{}
-
-		if u.Name == e.Name {
-			users.NewUser(fname+lname, email, pwd)
-		} else {
-			//something to Give an error and return them to the signup page
+		if len(problems) != 0 {
+			fmt.Fprint(w, problems)
+			return
 		}
+
+		users.NewUser(fname+" "+lname, email, pwd)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		setLoggedIn(w, users.GetUser(email))
 	})
 
-	http.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/signup/", func(w http.ResponseWriter, r *http.Request) {
 		renderTemplate(w, "signup.html", pTitle("Sign up"))
 	})
 
