@@ -28,9 +28,16 @@ type templateData struct {
 	Key       map[string]interface{}
 }
 
-func newTemplateData() templateData {
+func newTemplateData(title string, usr users.User) templateData {
 	t := templateData{}
-	t.PageTitle = "Social Argument Voting"
+	if title == "" {
+		title = "Social Argument Voting"
+	}
+	if usr.Email == "" {
+		usr = users.User{}
+	}
+	t.PageTitle = title
+	t.User = usr
 	t.Key = make(map[string]interface{}, 1)
 	return t
 	// TODO: We should probably be passing around pointers to templateData,
@@ -40,7 +47,7 @@ func newTemplateData() templateData {
 // pTitle is a helper function that returns a data struct that can be
 // passed to `renderTemplate` to set the page title.
 func pTitle(title string) interface{} {
-	t := newTemplateData()
+	t := newTemplateData("", users.User{})
 	t.PageTitle = title
 	return t
 }

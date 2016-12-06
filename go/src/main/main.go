@@ -24,11 +24,15 @@ func main() {
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
-		renderTemplate(w, "index.html", pTitle("Home"))
+		user := getLoggedIn(r)
+		data := newTemplateData("Home", user)
+		renderTemplate(w, "index.html", data)
 	})
 
 	http.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
-		renderTemplate(w, "about.html", pTitle("About the Site"))
+		user := getLoggedIn(r)
+		data := newTemplateData("About the Site", user)
+		renderTemplate(w, "about.html", data)
 	})
 
 	http.HandleFunc("/args/", func(w http.ResponseWriter, r *http.Request) {
@@ -40,8 +44,7 @@ func main() {
 			return
 		}
 
-		data := newTemplateData()
-		data.PageTitle = a.Description
+		data := newTemplateData(a.Description, getLoggedIn(r))
 		data.Key["argument"] = a
 		renderTemplate(w, "args.html", data)
 	})
@@ -115,15 +118,15 @@ func main() {
 
 		correct := users.Auth(email, pwd)
 		if !correct {
-			data := newTemplateData()
-			data.PageTitle = "Log in"
+			data := newTemplateData("Log in", users.User{})
 			data.Key["lastAttempt"] = email
 			renderTemplate(w, "login.html", data)
 			return
 		}
 
 		setLoggedIn(w, users.GetUser(email))
-		fmt.Fprintf(w, "Logged in as %v", email)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	})
 	})
 
 	http.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
@@ -160,10 +163,12 @@ func setLoggedIn(w http.ResponseWriter, u users.User) {
 // getLoggedIn returns the User associated with the given request, based
 // on a cookie. If the given request did not come from a logged-in user
 // (or if the claimed user does not exist), it returns an empty User.
-func getLoggedIn(r http.Request) users.User {
+func getLoggedIn(r *http.Request) users.User {
 	c, err := r.Cookie(userCookieName)
 	if err != nil {
 		return users.User{}
 	}
 	return users.GetUser(c.Value)
+}
+}
 }

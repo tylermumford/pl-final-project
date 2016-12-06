@@ -17,6 +17,13 @@
 				<li><a href="/">Home</a></li>
 				<li><a href="/about">About</a></li>
 			</ul>
+			<div class="navbar-text navbar-right" style="margin-right:0">
+			{{if .User.Email}}
+				Logged in as {{.User.Name}}
+			{{else}}
+				Not logged in.
+			{{end}}
+			</div>
 		</div>
 		<!--/.nav-collapse -->
 	</div>
