@@ -127,6 +127,10 @@ func main() {
 		setLoggedIn(w, users.GetUser(email))
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
+
+	http.HandleFunc("/logout/", func(w http.ResponseWriter, r *http.Request) {
+		setLoggedOut(w)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 
 	http.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
@@ -149,12 +153,24 @@ func findArgIDInPath(p string) (string, bool) {
 
 const userCookieName = "email"
 
-// setLoggedIn marks the current user as "logged in" by storing their
+// setLoggedIn marks the given user as "logged in" by storing their
 // email address in a cookie.
 func setLoggedIn(w http.ResponseWriter, u users.User) {
 	c := http.Cookie{
 		Name:   userCookieName,
 		Value:  u.Email,
+		Path:   "/",
+		Secure: false,
+	}
+	http.SetCookie(w, &c)
+}
+
+// Logs out by setting the cookie to "".
+func setLoggedOut(w http.ResponseWriter) {
+	c := http.Cookie{
+		Name:   userCookieName,
+		Value:  "",
+		Path:   "/",
 		Secure: false,
 	}
 	http.SetCookie(w, &c)
