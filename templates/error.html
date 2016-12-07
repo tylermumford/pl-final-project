@@ -9,6 +9,9 @@
 		<h1>{{.PageTitle}}</h1>
 		<p>Something has gone wrong. Either that page is missing, or a server error occurred.</p>
 		<p>Feel free to try again, or contact us for assistance.</p>
+		{{with .Key.errorMessage}}
+		<p>Error message: {{.}}</p>
+		{{end}}
 	</div>
 	
 	{{template "section-footer.html" .}}

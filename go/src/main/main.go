@@ -1,6 +1,7 @@
 package main
 
 import (
+	"comments"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -24,11 +25,15 @@ func main() {
 			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
-		renderTemplate(w, "index.html", pTitle("Home"))
+		user := getLoggedIn(r)
+		data := newTemplateData("Home", user)
+		renderTemplate(w, "index.html", data)
 	})
 
 	http.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
-		renderTemplate(w, "about.html", pTitle("About the Site"))
+		user := getLoggedIn(r)
+		data := newTemplateData("About the Site", user)
+		renderTemplate(w, "about.html", data)
 	})
 
 	http.HandleFunc("/args/", func(w http.ResponseWriter, r *http.Request) {
@@ -36,30 +41,37 @@ func main() {
 		a := getArg(argID)
 		if !found || a.ID == "" {
 			w.WriteHeader(http.StatusNotFound)
-			renderTemplate(w, "error.html", struct{ PageTitle string }{"Not Found"})
+			renderTemplate(w, "error.html", pTitle("Not found"))
 			return
 		}
 
-		data := newTemplateData()
-		data.PageTitle = a.Description
+		data := newTemplateData(a.Description, getLoggedIn(r))
 		data.Key["argument"] = a
+		data.Key["comments"] = comments.Load(a.ID)
 		renderTemplate(w, "args.html", data)
 	})
 
 	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Require user to be logged in.
-		renderTemplate(w, "create.html", pTitle("Create an argument"))
+		if !requireLoggedIn(w, r) {
+			return
+		}
+		data := newTemplateData("Create an argument", getLoggedIn(r))
+		renderTemplate(w, "create.html", data)
 	})
 
 	http.HandleFunc("/create-submit", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Require user to be logged in.
+		if !requireLoggedIn(w, r) {
+			return
+		}
 		descr := r.PostFormValue("descr")
 		newArg := saveNewArgument(descr)
 		http.Redirect(w, r, "/args/"+newArg, http.StatusFound)
 	})
 
 	http.HandleFunc("/upvote/", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Require user to be logged in.
+		if !requireLoggedIn(w, r) {
+			return
+		}
 		if argID, found := findArgIDInPath(r.URL.Path); found {
 			upvote(argID)
 			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
@@ -70,7 +82,9 @@ func main() {
 	})
 
 	http.HandleFunc("/downvote/", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: Require user to be logged in.
+		if !requireLoggedIn(w, r) {
+			return
+		}
 		if argID, found := findArgIDInPath(r.URL.Path); found {
 			downvote(argID)
 			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
@@ -80,30 +94,60 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/comment/", func(w http.ResponseWriter, r *http.Request) {
+		if !requireLoggedIn(w, r) {
+			return
+		}
+		data := newTemplateData("Error", getLoggedIn(r))
+
+		argID, found := findArgIDInPath(r.URL.Path)
+		if !found {
+			renderTemplate(w, "error.html", data)
+			return
+		}
+
+		err := comments.Save(getLoggedIn(r).Email, argID, r.FormValue("commentBody"))
+		if err != nil {
+			data := newTemplateData("Error", getLoggedIn(r))
+			data.Key["errorMessage"] = err.Error()
+			renderTemplate(w, "error.html", data)
+			return
+		}
+
+		http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
+	})
+
 	http.HandleFunc("/signup-submit", func(w http.ResponseWriter, r *http.Request) {
 		fname := r.FormValue("fname")
 		lname := r.FormValue("lname")
 		email := r.FormValue("email")
 		pwd := r.FormValue("pwd")
 		confpwd := r.FormValue("confpwd")
-		if confpwd != pwd {
-			//something to Give an error and return them to the signup page
-			fmt.Fprintln(w, "Those 2 passwords weren't the same. Please try again.")
+		var problems = make([]string, 0)
+		if fname == "" || lname == "" {
+			problems = append(problems, "Please provide a name.")
+		}
+		if email == "" {
+			problems = append(problems, "Please provide an email address.")
+		}
+		if pwd != confpwd {
+			problems = append(problems, "Passwords do not match.")
+		}
+		if len(problems) == 0 && users.GetUser(email).Email != "" {
+			problems = append(problems, "That user already exists.")
 		}
 
-		u := users.GetUser(email)
-		e := users.User{}
-
-		if u.Email != e.Email {
-			// User already exists. Log in.
-			// print ("That user already exist. Please use the login link to login")
-			fmt.Fprintln(w, "We already have a user with that address. Please login.")
+		if len(problems) != 0 {
+			fmt.Fprint(w, problems)
 			return
 		}
-		users.NewUser(fname+lname, email, pwd)
+
+		users.NewUser(fname+" "+lname, email, pwd)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		setLoggedIn(w, users.GetUser(email))
 	})
 
-	http.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/signup/", func(w http.ResponseWriter, r *http.Request) {
 		renderTemplate(w, "signup.html", pTitle("Sign up"))
 	})
 
@@ -118,15 +162,19 @@ func main() {
 
 		correct := users.Auth(email, pwd)
 		if !correct {
-			data := newTemplateData()
-			data.PageTitle = "Log in"
+			data := newTemplateData("Log in", users.User{})
 			data.Key["lastAttempt"] = email
 			renderTemplate(w, "login.html", data)
 			return
 		}
 
 		setLoggedIn(w, users.GetUser(email))
-		fmt.Fprintf(w, "Logged in as %v", email)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	})
+
+	http.HandleFunc("/logout/", func(w http.ResponseWriter, r *http.Request) {
+		setLoggedOut(w)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	})
 
 	http.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
@@ -149,12 +197,24 @@ func findArgIDInPath(p string) (string, bool) {
 
 const userCookieName = "email"
 
-// setLoggedIn marks the current user as "logged in" by storing their
+// setLoggedIn marks the given user as "logged in" by storing their
 // email address in a cookie.
 func setLoggedIn(w http.ResponseWriter, u users.User) {
 	c := http.Cookie{
 		Name:   userCookieName,
 		Value:  u.Email,
+		Path:   "/",
+		Secure: false,
+	}
+	http.SetCookie(w, &c)
+}
+
+// Logs out by setting the cookie to "".
+func setLoggedOut(w http.ResponseWriter) {
+	c := http.Cookie{
+		Name:   userCookieName,
+		Value:  "",
+		Path:   "/",
 		Secure: false,
 	}
 	http.SetCookie(w, &c)
@@ -163,10 +223,20 @@ func setLoggedIn(w http.ResponseWriter, u users.User) {
 // getLoggedIn returns the User associated with the given request, based
 // on a cookie. If the given request did not come from a logged-in user
 // (or if the claimed user does not exist), it returns an empty User.
-func getLoggedIn(r http.Request) users.User {
+func getLoggedIn(r *http.Request) users.User {
 	c, err := r.Cookie(userCookieName)
 	if err != nil {
 		return users.User{}
 	}
 	return users.GetUser(c.Value)
+}
+
+func requireLoggedIn(w http.ResponseWriter, r *http.Request) bool {
+	if getLoggedIn(r).Email == "" {
+		data := newTemplateData("Error", users.User{})
+		data.Key["errorMessage"] = htmlstr(`You must <a href="/login">Log in</a> to access this page.`)
+		renderTemplate(w, "error.html", data)
+		return false
+	}
+	return true
 }

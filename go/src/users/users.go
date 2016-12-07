@@ -130,6 +130,7 @@ func makeStruct(email string) (user User) {
 		log.Println("Error making User struct:", err)
 		return User{}
 	}
+	defer f.Close()
 	check(err)
 
 	b := bufio.NewReader(f)
@@ -148,7 +149,7 @@ func makeStruct(email string) (user User) {
 	pwd, _, err := b.ReadLine()
 	check(err)
 
-	user = User{email, name, pwd, date}
+	user = User{name, email, pwd, date}
 
 	return
 }
