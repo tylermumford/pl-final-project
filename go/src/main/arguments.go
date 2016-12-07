@@ -17,11 +17,29 @@ import (
 	"strings"
 )
 
+const (
+	dataFolder = "/vagrant/data/storage/"
+)
+
 type argument struct {
 	ID          string
 	Description string
 	Upvotes     int
 	Downvotes   int
+}
+
+func listArgs() (argIDs []argument) {
+	// sort by modification time. // parse out name w/o ".txt"
+	data, _ := os.Open(dataFolder)
+	file, _ := data.Readdirnames(1)
+	//info, _ := data.Readdir(-1) // ignoring this error
+	//sort.Sort(info)
+
+	for _, value := range file {
+		argIDs = append(argIDs, getArg(value))
+	}
+
+	return
 }
 
 func makeCmd(filename string, sCmd string, descr string) exec.Cmd {
@@ -86,3 +104,17 @@ func downvote(id string) {
 func (a argument) Score() int {
 	return a.Upvotes - a.Downvotes
 }
+
+/*
+func (list *[]os.FileInfo) Len() int {
+	return len(list)
+}
+func (list *[]FileInfo) Less(i, j int) bool {
+	return list[i].ModTime < list[j].ModTime
+}
+func (list *[]FileInfo) Swap(i, j int) {
+	tmp := list[i]
+	list[i] = list[j]
+	list[j] = tmp
+}
+*/
