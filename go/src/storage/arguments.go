@@ -6,7 +6,7 @@
 *		it to communicate with C#.
  */
 
-package main
+package storage
 
 import (
 	"fmt"
@@ -15,28 +15,39 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
-	dataFolder = "/vagrant/data/storage/"
+	argumentsFolder = "/vagrant/data/storage/"
 )
 
-type argument struct {
+func init() {
+	// Seed the random number generator.
+	seconds := time.Now().Second()
+	rand.Seed(int64(seconds))
+}
+
+// Argument :
+// contains information describing an argument. IDs are 5-digit
+// decimal numbers.
+type Argument struct {
 	ID          string
 	Description string
 	Upvotes     int
 	Downvotes   int
 }
 
-func listArgs() (argIDs []argument) {
+func ListArgs() (argIDs []Argument) {
 	// sort by modification time. // parse out name w/o ".txt"
-	data, _ := os.Open(dataFolder)
-	file, _ := data.Readdirnames(1)
+	data, _ := os.Open(argumentsFolder)
+	file, _ := data.Readdirnames(0)
 	//info, _ := data.Readdir(-1) // ignoring this error
 	//sort.Sort(info)
 
 	for _, value := range file {
-		argIDs = append(argIDs, getArg(value))
+		// value contains "55555.txt", so we slice it to get just the number.
+		argIDs = append(argIDs, GetArg(value[:5]))
 	}
 
 	return
@@ -53,11 +64,11 @@ func makeCmd(filename string, sCmd string, descr string) exec.Cmd {
 	return result
 }
 
-// saveNewArgument takes an argument description and saves it as a new argument.
+// SaveNewArgument takes an argument description and saves it as a new argument.
 // It returns the ID of the new argument.
-func saveNewArgument(descr string) string {
+func SaveNewArgument(descr string) string {
 	fn := fmt.Sprintf("%0d", rand.Intn(99999))
-	for getArg(fn).ID != "" {
+	for GetArg(fn).ID != "" {
 		// Loop until we get a non-existing argument ID
 		fn = fmt.Sprintf("%0d", rand.Intn(99999))
 	}
@@ -71,19 +82,19 @@ func saveNewArgument(descr string) string {
 	}
 }
 
-func getArg(id string) argument {
+func GetArg(id string) Argument {
 	c := makeCmd(id, "export", "")
 	str, _ := c.Output()
 	parts := strings.Split(string(str), "@@@")
 
 	// Should consist of description, upvotes, and downvotes.
 	if len(parts) != 3 {
-		return argument{}
+		return Argument{}
 	}
 
 	u, _ := strconv.Atoi(strings.TrimSpace(parts[1]))
 	d, _ := strconv.Atoi(strings.TrimSpace(parts[2]))
-	return argument{
+	return Argument{
 		ID:          id,
 		Description: parts[0],
 		Upvotes:     u,
@@ -91,17 +102,18 @@ func getArg(id string) argument {
 	}
 }
 
-func upvote(id string) {
+func Upvote(id string) {
 	c := makeCmd(id, "upvote", "")
 	c.Run()
 }
 
-func downvote(id string) {
+func Downvote(id string) {
 	c := makeCmd(id, "downvote", "")
 	c.Run()
 }
 
-func (a argument) Score() int {
+// Score returns upvotes minus downvotes.
+func (a Argument) Score() int {
 	return a.Upvotes - a.Downvotes
 }
 

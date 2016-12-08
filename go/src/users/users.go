@@ -125,6 +125,10 @@ func compareSlice(a, b []byte) bool {
 }
 
 func makeStruct(email string) (user User) {
+	if email == "" {
+		// Do not attempt to open a file if given an empty string.
+		return User{}
+	}
 	f, err := os.Open(dataFolder + email + ".txt")
 	if err != nil {
 		log.Println("Error making User struct:", err)

@@ -1,0 +1,8 @@
+{{/* Returns the Bootstrap label-* type for the given value.*/ -}}
+{{if gt . 0 -}}
+success
+{{- else if lt . 0 -}}
+danger
+{{- else -}}
+default
+{{- end}}

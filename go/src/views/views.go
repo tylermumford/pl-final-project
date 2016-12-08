@@ -1,4 +1,4 @@
-package main
+package views
 
 import (
 	"html/template"
@@ -14,7 +14,7 @@ func loadAllTemplates() {
 	allTemplates = template.Must(template.ParseGlob("/vagrant/templates/*"))
 }
 
-func renderTemplate(w http.ResponseWriter, templateName string, data interface{}) {
+func RenderView(w http.ResponseWriter, templateName string, data ViewData) {
 	loadAllTemplates()
 	err := allTemplates.ExecuteTemplate(w, templateName, data)
 	if err != nil {
@@ -22,14 +22,14 @@ func renderTemplate(w http.ResponseWriter, templateName string, data interface{}
 	}
 }
 
-type templateData struct {
+type ViewData struct {
 	PageTitle string
 	User      users.User
 	Key       map[string]interface{}
 }
 
-func newTemplateData(title string, usr users.User) templateData {
-	t := templateData{}
+func NewViewData(title string, usr users.User) ViewData {
+	t := ViewData{}
 	if title == "" {
 		title = "Social Argument Voting"
 	}
@@ -44,14 +44,14 @@ func newTemplateData(title string, usr users.User) templateData {
 	// instead of copying them around.
 }
 
-// pTitle is a helper function that returns a data struct that can be
+// Title is a helper function that returns a data struct that can be
 // passed to `renderTemplate` to set the page title.
-func pTitle(title string) interface{} {
-	t := newTemplateData("", users.User{})
+func Title(title string) ViewData {
+	t := NewViewData("", users.User{})
 	t.PageTitle = title
 	return t
 }
 
-func htmlstr(s string) template.HTML {
+func Htmlstr(s string) template.HTML {
 	return template.HTML(s)
 }

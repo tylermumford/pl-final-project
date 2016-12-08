@@ -1,22 +1,15 @@
 package main
 
 import (
-	"comments"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"regexp"
-	"time"
+	"storage"
 	"users"
+	"views"
 )
 
 func main() {
-
-	// General initialization
-	func() {
-		seconds := time.Now().Second()
-		rand.Seed(int64(seconds))
-	}()
 
 	// Setting up the controller
 
@@ -26,37 +19,46 @@ func main() {
 			return
 		}
 		user := getLoggedIn(r)
-		data := newTemplateData("Home", user)
-		renderTemplate(w, "index.html", data)
+		data := views.NewViewData("Home", user)
+		views.RenderView(w, "index.html", data)
 	})
 
 	http.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
 		user := getLoggedIn(r)
-		data := newTemplateData("About the Site", user)
-		renderTemplate(w, "about.html", data)
+		data := views.NewViewData("About the Site", user)
+		views.RenderView(w, "about.html", data)
 	})
 
 	http.HandleFunc("/args/", func(w http.ResponseWriter, r *http.Request) {
-		argID, found := findArgIDInPath(r.URL.Path)
-		a := getArg(argID)
-		if !found || a.ID == "" {
-			w.WriteHeader(http.StatusNotFound)
-			renderTemplate(w, "error.html", pTitle("Not found"))
+		// Show all arguments
+		if r.URL.Path == "/args/" {
+			data := views.NewViewData("All arguments", getLoggedIn(r))
+			data.Key["arguments"] = storage.ListArgs()
+			views.RenderView(w, "all-args.html", data)
 			return
 		}
 
-		data := newTemplateData(a.Description, getLoggedIn(r))
+		// Show a specific argument
+		argID, found := findArgIDInPath(r.URL.Path)
+		a := storage.GetArg(argID)
+		if !found || a.ID == "" {
+			w.WriteHeader(http.StatusNotFound)
+			views.RenderView(w, "error.html", views.Title("Not found"))
+			return
+		}
+
+		data := views.NewViewData(a.Description, getLoggedIn(r))
 		data.Key["argument"] = a
-		data.Key["comments"] = comments.Load(a.ID)
-		renderTemplate(w, "args.html", data)
+		data.Key["comments"] = storage.Load(a.ID)
+		views.RenderView(w, "args.html", data)
 	})
 
 	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
 		if !requireLoggedIn(w, r) {
 			return
 		}
-		data := newTemplateData("Create an argument", getLoggedIn(r))
-		renderTemplate(w, "create.html", data)
+		data := views.NewViewData("Create an argument", getLoggedIn(r))
+		views.RenderView(w, "create.html", data)
 	})
 
 	http.HandleFunc("/create-submit", func(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +66,7 @@ func main() {
 			return
 		}
 		descr := r.PostFormValue("descr")
-		newArg := saveNewArgument(descr)
+		newArg := storage.SaveNewArgument(descr)
 		http.Redirect(w, r, "/args/"+newArg, http.StatusFound)
 	})
 
@@ -73,7 +75,7 @@ func main() {
 			return
 		}
 		if argID, found := findArgIDInPath(r.URL.Path); found {
-			upvote(argID)
+			storage.Upvote(argID)
 			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
 		} else {
 			http.Redirect(w, r, "/error", http.StatusNotFound)
@@ -86,11 +88,11 @@ func main() {
 			return
 		}
 		if argID, found := findArgIDInPath(r.URL.Path); found {
-			downvote(argID)
+			storage.Downvote(argID)
 			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
 		} else {
 			w.WriteHeader(http.StatusNotFound)
-			renderTemplate(w, "error.html", pTitle("Error"))
+			views.RenderView(w, "error.html", views.Title("Error"))
 		}
 	})
 
@@ -98,19 +100,19 @@ func main() {
 		if !requireLoggedIn(w, r) {
 			return
 		}
-		data := newTemplateData("Error", getLoggedIn(r))
+		data := views.NewViewData("Error", getLoggedIn(r))
 
 		argID, found := findArgIDInPath(r.URL.Path)
 		if !found {
-			renderTemplate(w, "error.html", data)
+			views.RenderView(w, "error.html", data)
 			return
 		}
 
-		err := comments.Save(getLoggedIn(r).Email, argID, r.FormValue("commentBody"))
+		err := storage.Save(getLoggedIn(r).Email, argID, r.FormValue("commentBody"))
 		if err != nil {
-			data := newTemplateData("Error", getLoggedIn(r))
+			data := views.NewViewData("Error", getLoggedIn(r))
 			data.Key["errorMessage"] = err.Error()
-			renderTemplate(w, "error.html", data)
+			views.RenderView(w, "error.html", data)
 			return
 		}
 
@@ -148,7 +150,7 @@ func main() {
 	})
 
 	http.HandleFunc("/signup/", func(w http.ResponseWriter, r *http.Request) {
-		renderTemplate(w, "signup.html", pTitle("Sign up"))
+		views.RenderView(w, "signup.html", views.Title("Sign up"))
 	})
 
 	http.HandleFunc("/login/", func(w http.ResponseWriter, r *http.Request) {
@@ -156,15 +158,15 @@ func main() {
 		pwd := r.PostFormValue("pwd")
 
 		if email == "" {
-			renderTemplate(w, "login.html", pTitle("Log in"))
+			views.RenderView(w, "login.html", views.Title("Log in"))
 			return
 		}
 
 		correct := users.Auth(email, pwd)
 		if !correct {
-			data := newTemplateData("Log in", users.User{})
+			data := views.NewViewData("Log in", users.User{})
 			data.Key["lastAttempt"] = email
-			renderTemplate(w, "login.html", data)
+			views.RenderView(w, "login.html", data)
 			return
 		}
 
@@ -178,7 +180,7 @@ func main() {
 	})
 
 	http.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
-		renderTemplate(w, "error.html", nil)
+		views.RenderView(w, "error.html", views.ViewData{})
 	})
 
 	http.ListenAndServe("localhost:8000", nil)
@@ -233,9 +235,9 @@ func getLoggedIn(r *http.Request) users.User {
 
 func requireLoggedIn(w http.ResponseWriter, r *http.Request) bool {
 	if getLoggedIn(r).Email == "" {
-		data := newTemplateData("Error", users.User{})
-		data.Key["errorMessage"] = htmlstr(`You must <a href="/login">Log in</a> to access this page.`)
-		renderTemplate(w, "error.html", data)
+		data := views.NewViewData("Error", users.User{})
+		data.Key["errorMessage"] = views.Htmlstr(`You must <a href="/login">Log in</a> to access this page.`)
+		views.RenderView(w, "error.html", data)
 		return false
 	}
 	return true

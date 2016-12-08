@@ -1,0 +1,24 @@
+<html>
+<head>
+	{{template "section-head.html" .}}
+</head>
+<body>
+	{{template "section-nav.html" .}}
+
+	<div class="container">
+		<h1>All arguments</h1>
+		<ul>
+		{{range .Key.arguments}}
+			<li><a href="/args/{{.ID}}">
+				<span class="label label-{{template "scorecolor.html" .Score}}">{{.Score}}</span>
+				{{.Description}} 
+			</a></li>
+		{{else}}
+			<p>No arguments have been created.</p>
+		{{end}}
+		</ul>
+	</div>
+	
+	{{template "section-footer.html" .}}
+</body>
+</html>

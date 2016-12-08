@@ -1,9 +1,10 @@
-package comments
+package storage
 
 import (
 	"encoding/gob"
 	"os"
 	"time"
+	"users"
 )
 
 // Comment stores everything about an argument's comment. User contains a username
@@ -16,11 +17,22 @@ type Comment struct {
 	Body     string
 }
 
-const dataFolder = "/vagrant/data/comments/"
+// NiceDate returns an output-ready, human-recognizable date string.
+// Don't depend on this output; it may change.
+func (c *Comment) NiceDate() string {
+	return c.Date.Local().Format("Jan 2, 2006 at 15:04 MST")
+}
+
+// NiceName returns the name of the comment's creator.
+func (c *Comment) NiceName() string {
+	return users.GetUser(c.User).Name
+}
+
+const commentsFolder = "/vagrant/data/comments/"
 
 // Load returns all of the comments on the given argument, sorted somehow.
 func Load(argID string) []Comment {
-	filename := dataFolder + argID + "-comments.txt"
+	filename := commentsFolder + argID + "-comments.txt"
 	file, err := os.Open(filename)
 	if err != nil {
 		return []Comment{}
@@ -40,7 +52,7 @@ func Save(user, argID, body string) error {
 	}
 
 	all := Load(argID)
-	filename := dataFolder + argID + "-comments.txt"
+	filename := commentsFolder + argID + "-comments.txt"
 	file, err := os.Create(filename)
 	if err != nil {
 		return Error{"Could not open file: " + filename}
@@ -50,8 +62,9 @@ func Save(user, argID, body string) error {
 	c := Comment{
 		User:     user,
 		Argument: argID,
-		Date:     time.Now(),
-		Body:     body,
+		// TODO: set location when we set the time
+		Date: time.Now(),
+		Body: body,
 	}
 	all = append(all, c)
 

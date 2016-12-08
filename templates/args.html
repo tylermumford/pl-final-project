@@ -18,17 +18,19 @@
 				</ul>
 			</div>
 			
-			<div class="btn-group">
-				<a href="/upvote/{{.Key.argument.ID}}" class="btn btn-success">Upvote this argument</a>
-				<a href="/downvote/{{.Key.argument.ID}}" class="btn btn-danger">Downvote this argument</a>
-			</div>
+			<a href="/upvote/{{.Key.argument.ID}}" class="btn btn-success">
+				<span class="glyphicon glyphicon-thumbs-up"></span> Upvote this argument
+			</a>
+			<a href="/downvote/{{.Key.argument.ID}}" class="btn btn-danger">
+				<span class="glyphicon glyphicon-thumbs-down"></span> Downvote this argument
+			</a>
 
 			<hr>
 
 			{{range .Key.comments}}
 			<p>
 				{{.Body}} <br>
-				<span class="text-muted">-- {{.User}} -- {{.Date}}</span>
+				<span class="text-muted">&mdash; {{.NiceName}} : {{.NiceDate}}</span>
 			</p>
 			{{end}}
 
