@@ -80,15 +80,27 @@ func main() {
 		}
 	})
 
-	http.HandleFunc("/signup-submit", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/signup/", func(w http.ResponseWriter, r *http.Request) {
 		fname := r.FormValue("fname")
 		lname := r.FormValue("lname")
 		email := r.FormValue("email")
 		pwd := r.FormValue("pwd")
 		confpwd := r.FormValue("confpwd")
+
+		var problems = make([]string, 0)
+
+		if email == "" {
+			renderTemplate(w, "signup.html", pTitle("Sign up"))
+			return
+		}
+
 		if confpwd != pwd {
 			//something to Give an error and return them to the signup page
-			fmt.Fprintln(w, "Those 2 passwords weren't the same. Please try again.")
+			problems = append(problems, "Those 2 passwords weren't the same.")
+		}
+
+		if fname == "" || lname == "" {
+			problems = append(problems, "Please provide a name.")
 		}
 
 		u := users.GetUser(email)
@@ -96,18 +108,26 @@ func main() {
 
 		if u.Email != e.Email {
 			// User already exists. Log in.
-			// print ("That user already exist. Please use the login link to login")
-			fmt.Fprintln(w, "We already have a user with that address. Please login.")
+			problems = append(problems, "A user already exists with that email.")
+		}
+
+		if len(problems) != 0 {
+			//data := newTemplateData("Sign up", getLoggedIn(*r))
+			data := newTemplateData()
+			data.Key["problems"] = problems
+			data.Key["fname"] = fname
+			data.Key["lname"] = lname
+			data.Key["email"] = email
+			renderTemplate(w, "signup.html", data)
 			return
 		}
 		users.NewUser(fname+lname, email, pwd)
 	})
 
-	http.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
-		renderTemplate(w, "signup.html", pTitle("Sign up"))
-	})
+	/*http.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
+	})*/
 
-	http.HandleFunc("/login/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/login/", func(w http.ResponseWriter, r *http.Request) { //Look here
 		email := r.PostFormValue("email")
 		pwd := r.PostFormValue("pwd")
 
