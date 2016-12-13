@@ -7,11 +7,14 @@
 
 	<div class="container">
 		<h1>{{.PageTitle}}</h1>
-		<p>Something has gone wrong. Either that page is missing, or a server error occurred.</p>
-		<p>Feel free to try again, or contact us for assistance.</p>
+	
 		{{with .Key.errorMessage}}
-		<p>Error message: {{.}}</p>
+		<p class="alert alert-warning">Sorry, something's gone wrong. Error message: {{.}}</p>
+		{{else}}
+		<p>Sorry, something's gone wrong. Either that page is missing, or a server error occurred.</p>
 		{{end}}
+
+		<p>Feel free to try again, or contact us for assistance.</p>
 	</div>
 	
 	{{template "section-footer.html" .}}

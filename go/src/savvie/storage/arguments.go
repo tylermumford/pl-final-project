@@ -1,11 +1,14 @@
-/*
-*	The code in this file is meant to work with
-*		our C# files to store arguments and comments.
-*
-*	makeCmd is the backbone. All other functions use
-*		it to communicate with C#.
- */
-
+// Package storage handles data persistence.
+//
+// It works with our C# code to store arguments and uses Go code to store comments.
+//
+// Arguments
+//
+// makeCmd is the backbone. All other functions use it to communicate with C#. Generally, you'll want to use GetArg to get a specified Argument struct.
+//
+// Comments
+//
+// See the documentation of individual functions. Generally, you'll want to load a slice of all the comments for a specified argument (LoadComments).
 package storage
 
 import (
@@ -38,6 +41,7 @@ type Argument struct {
 	Downvotes   int
 }
 
+// ListArgs returns a list of all the arguments on the site.
 func ListArgs() (argIDs []Argument) {
 	// sort by modification time. // parse out name w/o ".txt"
 	data, _ := os.Open(argumentsFolder)
@@ -82,6 +86,8 @@ func SaveNewArgument(descr string) string {
 	}
 }
 
+// GetArg takes an argument's 5-digit ID and returns the corresponding
+// argument struct.
 func GetArg(id string) Argument {
 	c := makeCmd(id, "export", "")
 	str, _ := c.Output()
@@ -102,11 +108,13 @@ func GetArg(id string) Argument {
 	}
 }
 
+// Upvote simply upvotes the specified argument.
 func Upvote(id string) {
 	c := makeCmd(id, "upvote", "")
 	c.Run()
 }
 
+// Downvote simply downvotes the specified argument.
 func Downvote(id string) {
 	c := makeCmd(id, "downvote", "")
 	c.Run()

@@ -1,15 +1,9 @@
-/*
-* Written by Katrina Mehring as part of Code Camp and final project
-*   for a Programming Languages class.
-*
-*	This package is used by the main package. It is used to
-*		hash user passwords, verify user login information,
-*		and store user information. Because of hashing issues
-*		at Code Camp, the old hash has been commented out, and
-*		a new hash is being used. The code is left here so that
-*		it can hopefully be used in future implementations.
- */
-
+// Package users handles user accounts. It is used to
+// hash user passwords, verify user login information,
+// and store user information. Because of hashing issues
+// at Code Camp, the old hash has been commented out, and
+// a new hash is being used. The code is left here so that
+// it can hopefully be used in future implementations.
 package users
 
 import (
@@ -18,9 +12,7 @@ import (
 	"time"
 
 	// "github.com/golang/crypto/scrypt"
-	//"crypto/rand"
-	//"io"
-	//"fmt"
+	// "crypto/rand"
 	"crypto/sha256"
 	"log"
 )
@@ -31,7 +23,7 @@ const (
 	dataFolder = "/vagrant/data/users/"
 )
 
-// User a Struct made only for the purpose
+// User is a struct made only for the purpose
 // of being returned to main.go to
 // verify new users don't already exist
 // and to verify passwords and whatnot.
@@ -41,8 +33,7 @@ type User struct {
 	DateStarted time.Time
 }
 
-//NewUser :
-// A function that allows the main package to
+// NewUser is a function that allows the main package to
 // create a new user after verifying that the
 // username doesn't already exist (usernames
 // are emails).
@@ -63,8 +54,7 @@ func NewUser(name, email, pword string) {
 	f.Sync()
 }
 
-// GetUser :
-// A function to return a user struct to the main package.
+// GetUser is a function to return a user struct to the main package.
 // This is used to connect a user to an argument, verify
 // that a user exists or not, etc.
 func GetUser(email string) (user User) {
@@ -87,8 +77,7 @@ func pHash(pword string) (hash []byte) {
 	return
 }
 
-// Auth :
-// A function that authenticates
+// Auth is a function that authenticates
 // a user's password based on the username
 // and password input.
 func Auth(email, pword string) bool {

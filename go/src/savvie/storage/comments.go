@@ -3,8 +3,8 @@ package storage
 import (
 	"encoding/gob"
 	"os"
+	"savvie/users"
 	"time"
-	"users"
 )
 
 // Comment stores everything about an argument's comment. User contains a username
@@ -18,20 +18,21 @@ type Comment struct {
 }
 
 // NiceDate returns an output-ready, human-recognizable date string.
-// Don't depend on this output; it may change.
+// The format of the date is not guaranteed to remain constant. It may change without notice.
 func (c *Comment) NiceDate() string {
 	return c.Date.Local().Format("Jan 2, 2006 at 15:04 MST")
 }
 
-// NiceName returns the name of the comment's creator.
+// NiceName returns the human name of the comment's creator.
 func (c *Comment) NiceName() string {
 	return users.GetUser(c.User).Name
 }
 
 const commentsFolder = "/vagrant/data/comments/"
 
-// Load returns all of the comments on the given argument, sorted somehow.
-func Load(argID string) []Comment {
+// LoadComments returns all of the comments on the given argument, but they're not guaranteed to be sorted.
+// They will be sorted in a future version.
+func LoadComments(argID string) []Comment {
 	filename := commentsFolder + argID + "-comments.txt"
 	file, err := os.Open(filename)
 	if err != nil {
@@ -45,13 +46,13 @@ func Load(argID string) []Comment {
 	return result
 }
 
-// Save stores a new comment with the given information.
-func Save(user, argID, body string) error {
+// SaveNewComment persists a new comment with the given information.
+func SaveNewComment(user, argID, body string) error {
 	if user == "" || argID == "" || body == "" {
 		return Error{"Could not create comment with given information."}
 	}
 
-	all := Load(argID)
+	all := LoadComments(argID)
 	filename := commentsFolder + argID + "-comments.txt"
 	file, err := os.Create(filename)
 	if err != nil {

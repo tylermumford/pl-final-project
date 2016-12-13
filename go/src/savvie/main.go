@@ -1,12 +1,19 @@
+// SAVvie is a website for social argument voting and discussion.
+//
+// main.go implements the HTTP server functionality of SAVvie. It handles requests by fetching
+// appropriate data from subpackages and presenting it with the view package.
+//
+// Written as part of Code Camp and as the final project for Programming Languages class.
+
 package main
 
 import (
 	"fmt"
 	"net/http"
 	"regexp"
-	"storage"
-	"users"
-	"views"
+	"savvie/storage"
+	"savvie/users"
+	"savvie/views"
 )
 
 func main() {
@@ -49,7 +56,7 @@ func main() {
 
 		data := views.NewViewData(a.Description, getLoggedIn(r))
 		data.Key["argument"] = a
-		data.Key["comments"] = storage.Load(a.ID)
+		data.Key["comments"] = storage.LoadComments(a.ID)
 		views.RenderView(w, "args.html", data)
 	})
 
@@ -108,7 +115,7 @@ func main() {
 			return
 		}
 
-		err := storage.Save(getLoggedIn(r).Email, argID, r.FormValue("commentBody"))
+		err := storage.SaveNewComment(getLoggedIn(r).Email, argID, r.FormValue("commentBody"))
 		if err != nil {
 			data := views.NewViewData("Error", getLoggedIn(r))
 			data.Key["errorMessage"] = err.Error()
