@@ -36,16 +36,16 @@ func main() {
 		views.RenderView(w, "about.html", data)
 	})
 
-	http.HandleFunc("/args/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/opts/", func(w http.ResponseWriter, r *http.Request) {
 		// Show all arguments
-		if r.URL.Path == "/args/" {
-			data := views.NewViewData("All arguments", getLoggedIn(r))
+		if r.URL.Path == "/opts/" {
+			data := views.NewViewData("DEPRECATED All options", getLoggedIn(r))
 			data.Key["arguments"] = storage.ListOpts()
 			views.RenderView(w, "all-args.html", data)
 			return
 		}
 
-		// Show a specific argument
+		// Show a specific option
 		argID, found := findArgIDInPath(r.URL.Path)
 		a := storage.GetOpt(argID)
 		if !found || a.ID == "" {

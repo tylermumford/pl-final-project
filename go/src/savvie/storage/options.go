@@ -90,6 +90,15 @@ func SaveNewOption(descr string) string {
 // GetOpt takes an option's 5-digit ID and returns the corresponding
 // option struct.
 func GetOpt(id string) Option {
+	for decision := range decisionList {
+		for option := range decisionList[decision].Options {
+			if decisionList[decision].Options[option].ID == id {
+				return decisionList[decision].Options[option]
+			}
+		}
+	}
+	return Option{}
+
 	c := makeCmd(id, "export", "")
 	str, _ := c.Output()
 	parts := strings.Split(string(str), "@@@")
