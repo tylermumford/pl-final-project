@@ -1,72 +1,80 @@
 <html>
-	<head>
-		{{template "section-head.html" .}}
-	</head>
-	<body>
-		{{template "section-nav.html" .}}
 
-		<div class="container">
-			<h1>Option No. {{.Key.argument.ID}}</h1>
-			<div class="well">
-				<p class="h3">
-					{{.Key.argument.Description}}
-				</p>
-				<ul>
-					<li>Score: {{.Key.argument.Score}}</li>
-					<li>Upvotes: {{.Key.argument.Upvotes}}</li>
-					<li>Downvotes: {{.Key.argument.Downvotes}}</li>
-				</ul>
-				<p>Test</p>
-				<div class="container">
-					<div class="row-fluid">
-						<div class="col-md-6"><p>Pros: (none yet)</p></div>
-						<div class="col-md-6"><p>Cons: (none yet)</p></div>
-					</div>
-				</div>
-			</div>
-			
-			<a href="/upvote/{{.Key.argument.ID}}" class="btn btn-success">
-				<span class="glyphicon glyphicon-thumbs-up"></span> Upvote this option
-			</a>
-			<a href="/downvote/{{.Key.argument.ID}}" class="btn btn-danger">
-				<span class="glyphicon glyphicon-thumbs-down"></span> Downvote this option
-			</a>
-			<a href="/" class="btn btn-default">
-				<span class="glyphicon glyphicon-pencil"></span> Propose a new option&hellip;
-			</a>
+<head>
+    {{template "section-head.html" .}}
+</head>
 
-			<hr>
+<body>
+    {{template "section-nav.html" .}}
 
-			{{range .Key.comments}}
-			<p>
-				{{.Body}} <br>
-				<span class="text-muted">&mdash; {{.NiceName}} : {{.NiceDate}}</span>
-			</p>
-			{{end}}
+    <div class="container">
+        <h1>Option No. {{.Key.argument.ID}}</h1>
+        <div class="well">
+            <p class="h3">
+                {{.Key.argument.Description}}
+            </p>
+            <ul>
+                <li>Score: {{.Key.argument.Score}}</li>
+                <li>Upvotes: {{.Key.argument.Upvotes}}</li>
+                <li>Downvotes: {{.Key.argument.Downvotes}}</li>
+            </ul>
+        </div>
 
-			{{if .Key.comments}}<hr>{{end}}
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Pros</h3>
+                <ul>
+                    {{range .Key.comments}} {{if eq .Type "Pro"}}{{.Body}}{{end}} {{end}}
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h3>Cons</h3>
+                <ul>
+                    {{range .Key.comments}} {{if eq .Type "Con"}}{{.Body}}{{end}} {{end}}
+                </ul>
+            </div>
+        </div>
 
-			{{if .User.Email}}
-			<form action="/comment/{{.Key.argument.ID}}" method="POST" style="max-width:80ex">
-				<div class="form-group">
-					<label for="commentBody">Comment</label>
-					<textarea name="commentBody" id="commentBody" rows="4" class="form-control"></textarea>
-				</div>
-				<div class="form-group pull-right">
-					<span>This is a: </span>
-					<div class="btn-group">
-						<input type="button" class="btn btn-default active" value="Comment">
-						<input type="button" class="btn btn-default" value="Pro">
-						<input type="button" class="btn btn-default" value="Con">
-					</div>
-				</div>
-				<input type="submit" class="btn btn-info" value="Submit">
-			</form>
-			{{else}}
-			<p>Logged-in users can comment on arguments.</p>
-			{{end}}
-		</div>
+        <hr>
 
-		{{template "section-footer.html" .}}
-	</body>
+        <a href="/upvote/{{.Key.argument.ID}}" class="btn btn-success">
+            <span class="glyphicon glyphicon-thumbs-up"></span> Upvote this option
+        </a>
+        <a href="/downvote/{{.Key.argument.ID}}" class="btn btn-danger">
+            <span class="glyphicon glyphicon-thumbs-down"></span> Downvote this option
+        </a>
+        <a href="/" class="btn btn-default">
+            <span class="glyphicon glyphicon-pencil"></span> Propose a new option&hellip;
+        </a>
+
+        <hr> {{range .Key.comments}}{{if eq .Type "Comment"}}
+        <p>
+            {{.Body}} <br>
+            <span class="text-muted">&mdash; {{.NiceName}} : {{.NiceDate}}</span>
+        </p>
+        {{end}}{{end}} {{if .Key.comments}}
+        <hr>{{end}} {{if .User.Email}}
+        <form action="/comment/{{.Key.argument.ID}}" method="POST" style="max-width:80ex">
+            <div class="form-group">
+                <label for="commentBody">Comment</label>
+                <textarea name="commentBody" id="commentBody" rows="4" class="form-control"></textarea>
+            </div>
+            <div class="form-group pull-right">
+                <span>This is a: </span>
+                <div class="btn-group">
+                    <input type="button" class="btn btn-default active" value="Comment">
+                    <input type="button" class="btn btn-default" value="Pro">
+                    <input type="button" class="btn btn-default" value="Con">
+                </div>
+            </div>
+            <input type="submit" class="btn btn-info" value="Submit">
+        </form>
+        {{else}}
+        <p>Logged-in users can comment on arguments.</p>
+        {{end}}
+    </div>
+
+    {{template "section-footer.html" .}}
+</body>
+
 </html>

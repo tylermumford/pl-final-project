@@ -1,34 +1,37 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	{{template "section-head.html" .}}
+    {{template "section-head.html" .}}
 </head>
+
 <body>
 
-	<!-- Fixed navbar -->
-	{{template "section-nav.html" .}}
+    <!-- Fixed navbar -->
+    {{template "section-nav.html" .}}
 
-	<!-- Begin page content -->
-	<div class="container">
-		<div class="well">
-			<h1>SAVvie</h1>
-			<p>
-				SAVvie is intented to be a platform for formal argumentation loosely based on <a href="https://en.wikipedia.org/wiki/Robert%27s_Rules_of_Order" target="_blank">Robert's Rules of Order</a>. 
-			</p>
-		</div>
-		
-		<ul>
-			<li><a href="/args/">View all arguments on the site</a></li>
-			<li><a href="/create">Create a new argument</a></li>
-		</ul>
-		<ul>
-			<li><a href="/login">Log in</a></li>
-			<li><a href="/logout" class="text-danger">Log out</a></li>
-			<li><a href="/signup">Sign up</a></li>
-		</ul>
+    <!-- Begin page content -->
+    <div class="container">
+        <div class="well">
+            <h1>SAVvie</h1>
+            <p>
+                SAVvie is intented to be a platform for formal decision-making loosely based on the Delphi Method</a>.
+            </p>
+        </div>
 
-	</div>
+        <ul>
+            <li><a href="/decisions/">View all of your decisions on the site</a></li>
+            <li><a href="/create">Create a new decision</a></li>
+        </ul>
+        <ul>
+            <li><a href="/login">Log in</a></li>
+            <li><a href="/logout" class="text-danger">Log out</a></li>
+            <li><a href="/signup">Sign up</a></li>
+        </ul>
 
-	{{template "section-footer.html" .}}
+    </div>
+
+    {{template "section-footer.html" .}}
 </body>
+
 </html>

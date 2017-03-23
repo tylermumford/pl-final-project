@@ -9,17 +9,14 @@
 
     <div class="container">
         <h1>All decisions</h1>
-        <ul>
+        <div class="btn-group btn-group-vertical">
             {{range .Key.decisions}}
-            <li>
-                <a href="/decisions/{{.ID}}">
-					{{.Description}}
-                </a>
-            </li>
-            {{else}}
+            <a href="/decisions/{{.ID}}" class="btn btn-default" style="white-space: normal">
+				{{.Description}}
+            </a> {{else}}
             <p>No decisions have been created.</p>
             {{end}}
-        </ul>
+        </div>
     </div>
 
     {{template "section-footer.html" .}}
