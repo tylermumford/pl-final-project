@@ -83,6 +83,10 @@ func ListDecisions() []Decision {
 
 // GetDecision returns a specific decision.
 func GetDecision(decisionID string) Decision {
-	// TODO
+	for _, d := range decisionList {
+		if d.ID==decisionID {
+			return d;
+		}
+	}
 	return Decision{}
 }
