@@ -1,0 +1,42 @@
+<html>
+
+<head>
+    {{template "section-head.html" .}}
+</head>
+
+<body>
+    {{template "section-nav.html" .}}
+
+    <div class="container">
+        <h1>Decision No. {{.Key.decision.ID}}</h1>
+        <div class="well">
+            <p class="h3">
+                {{.Key.decision.Description}}
+            </p>
+        </div>
+
+        <hr>
+        <h2>Options:</h2>
+        <div class="options-list">
+            {{range .Key.options}}
+            <p class="option well well-sm">
+                <a href="/args/{{.ID}}">{{.Description}}</a> ({{.Score}} pt)
+            </p>
+            {{end}}
+        </div>
+        {{if .Key.options}}
+        <hr>{{end}} {{if .User.Email}}
+        <p>
+            <a href="/" class="btn btn-default">
+                <span class="glyphicon glyphicon-pencil"></span> Propose a new option&hellip;
+            </a>
+        </p>
+        {{else}}
+        <p>Logged-in users can propose new options.</p>
+        {{end}}
+    </div>
+
+    {{template "section-footer.html" .}}
+</body>
+
+</html>

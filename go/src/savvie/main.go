@@ -60,6 +60,30 @@ func main() {
 		views.RenderView(w, "args.html", data)
 	})
 
+	http.HandleFunc("/decisions/", func(w http.ResponseWriter, r *http.Request) {
+		// Show all decisions
+		if r.URL.Path == "/decisions/" {
+			data := views.NewViewData("All decisions", getLoggedIn(r))
+			data.Key["decisions"] = storage.ListDecisions()
+			views.RenderView(w, "all-decisions.html", data)
+			return
+		}
+
+		// Show a specific decision
+		decisionID, found := findDecisionIDInPath(r.URL.Path)
+		d := storage.GetDecision(decisionID)
+		if !found || d.ID == "" {
+			w.WriteHeader(http.StatusNotFound)
+			views.RenderView(w, "error.html", views.Title("Not found"))
+			return
+		}
+
+		data := views.NewViewData(d.Description, getLoggedIn(r))
+		data.Key["decision"] = d
+		data.Key["options"] = d.Options
+		views.RenderView(w, "decision.html", data)
+	})
+
 	http.HandleFunc("/create", func(w http.ResponseWriter, r *http.Request) {
 		if !requireLoggedIn(w, r) {
 			return
@@ -195,6 +219,17 @@ func main() {
 
 func findArgIDInPath(p string) (string, bool) {
 	re := regexp.MustCompile("/([0-9]{5})$")
+	sub := re.FindStringSubmatch(p)
+
+	if sub == nil {
+		return "", false
+	}
+
+	return sub[1], true
+}
+
+func findDecisionIDInPath(p string) (string, bool) {
+	re := regexp.MustCompile("/([0-9]+)$")
 	sub := re.FindStringSubmatch(p)
 
 	if sub == nil {

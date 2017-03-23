@@ -1,10 +1,22 @@
-div.motion-group{
-	float: right;
+div.motion-group {
+    float: right;
 }
-h4.moveTo{
-	font-weight: bold;
-	float: left;
+
+h4.moveTo {
+    font-weight: bold;
+    float: left;
 }
-div.motions{
-	padding-top: 10px;
+
+div.motions {
+    padding-top: 10px;
+}
+
+.options-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.option {
+    width: 48%;
 }

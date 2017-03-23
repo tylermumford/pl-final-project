@@ -1,0 +1,28 @@
+<html>
+
+<head>
+    {{template "section-head.html" .}}
+</head>
+
+<body>
+    {{template "section-nav.html" .}}
+
+    <div class="container">
+        <h1>All decisions</h1>
+        <ul>
+            {{range .Key.decisions}}
+            <li>
+                <a href="/decisions/{{.ID}}">
+					{{.Description}}
+                </a>
+            </li>
+            {{else}}
+            <p>No decisions have been created.</p>
+            {{end}}
+        </ul>
+    </div>
+
+    {{template "section-footer.html" .}}
+</body>
+
+</html>
