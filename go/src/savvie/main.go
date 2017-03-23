@@ -40,14 +40,14 @@ func main() {
 		// Show all arguments
 		if r.URL.Path == "/args/" {
 			data := views.NewViewData("All arguments", getLoggedIn(r))
-			data.Key["arguments"] = storage.ListArgs()
+			data.Key["arguments"] = storage.ListOpts()
 			views.RenderView(w, "all-args.html", data)
 			return
 		}
 
 		// Show a specific argument
 		argID, found := findArgIDInPath(r.URL.Path)
-		a := storage.GetArg(argID)
+		a := storage.GetOpt(argID)
 		if !found || a.ID == "" {
 			w.WriteHeader(http.StatusNotFound)
 			views.RenderView(w, "error.html", views.Title("Not found"))
@@ -73,7 +73,7 @@ func main() {
 			return
 		}
 		descr := r.PostFormValue("descr")
-		newArg := storage.SaveNewArgument(descr)
+		newArg := storage.SaveNewOption(descr)
 		http.Redirect(w, r, "/args/"+newArg, http.StatusFound)
 	})
 

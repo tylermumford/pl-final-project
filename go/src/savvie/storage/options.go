@@ -1,14 +1,15 @@
 // Package storage handles data persistence.
 //
-// It works with our C# code to store arguments and uses Go code to store comments.
+// It works with our C# code to store options (formerly arguments) and uses Go
+// code to store comments.
 //
-// Arguments
+// Options
 //
-// makeCmd is the backbone. All other functions use it to communicate with C#. Generally, you'll want to use GetArg to get a specified Argument struct.
+// makeCmd is the backbone. All other functions use it to communicate with C#. Generally, you'll want to use GetOpt to get a specified option struct.
 //
 // Comments
 //
-// See the documentation of individual functions. Generally, you'll want to load a slice of all the comments for a specified argument (LoadComments).
+// See the documentation of individual functions. Generally, you'll want to load a slice of all the comments for a specified option (LoadComments).
 package storage
 
 import (
@@ -22,7 +23,7 @@ import (
 )
 
 const (
-	argumentsFolder = "/vagrant/data/storage/"
+	optionsFolder = "/vagrant/data/storage/"
 )
 
 func init() {
@@ -31,27 +32,27 @@ func init() {
 	rand.Seed(int64(seconds))
 }
 
-// Argument :
-// contains information describing an argument. IDs are 5-digit
+// Option :
+// contains information describing an option to a decision. IDs are 5-digit
 // decimal numbers.
-type Argument struct {
+type Option struct {
 	ID          string
 	Description string
 	Upvotes     int
 	Downvotes   int
 }
 
-// ListArgs returns a list of all the arguments on the site.
-func ListArgs() (argIDs []Argument) {
+// ListOpts returns a list of all the options on the site.
+func ListOpts() (optIDs []Option) {
 	// sort by modification time. // parse out name w/o ".txt"
-	data, _ := os.Open(argumentsFolder)
+	data, _ := os.Open(optionsFolder)
 	file, _ := data.Readdirnames(0)
 	//info, _ := data.Readdir(-1) // ignoring this error
 	//sort.Sort(info)
 
 	for _, value := range file {
 		// value contains "55555.txt", so we slice it to get just the number.
-		argIDs = append(argIDs, GetArg(value[:5]))
+		optIDs = append(optIDs, GetOpt(value[:5]))
 	}
 
 	return
@@ -68,12 +69,12 @@ func makeCmd(filename string, sCmd string, descr string) exec.Cmd {
 	return result
 }
 
-// SaveNewArgument takes an argument description and saves it as a new argument.
-// It returns the ID of the new argument.
-func SaveNewArgument(descr string) string {
+// SaveNewOption takes an option description and saves it as a new option.
+// It returns the ID of the new option.
+func SaveNewOption(descr string) string {
 	fn := fmt.Sprintf("%0d", rand.Intn(99999))
-	for GetArg(fn).ID != "" {
-		// Loop until we get a non-existing argument ID
+	for GetOpt(fn).ID != "" {
+		// Loop until we get a non-existing option ID
 		fn = fmt.Sprintf("%0d", rand.Intn(99999))
 	}
 	cmd := makeCmd(fn, "create", descr)
@@ -86,21 +87,21 @@ func SaveNewArgument(descr string) string {
 	}
 }
 
-// GetArg takes an argument's 5-digit ID and returns the corresponding
-// argument struct.
-func GetArg(id string) Argument {
+// GetOpt takes an option's 5-digit ID and returns the corresponding
+// option struct.
+func GetOpt(id string) Option {
 	c := makeCmd(id, "export", "")
 	str, _ := c.Output()
 	parts := strings.Split(string(str), "@@@")
 
 	// Should consist of description, upvotes, and downvotes.
 	if len(parts) != 3 {
-		return Argument{}
+		return Option{}
 	}
 
 	u, _ := strconv.Atoi(strings.TrimSpace(parts[1]))
 	d, _ := strconv.Atoi(strings.TrimSpace(parts[2]))
-	return Argument{
+	return Option{
 		ID:          id,
 		Description: parts[0],
 		Upvotes:     u,
@@ -108,20 +109,20 @@ func GetArg(id string) Argument {
 	}
 }
 
-// Upvote simply upvotes the specified argument.
+// Upvote simply upvotes the specified option.
 func Upvote(id string) {
 	c := makeCmd(id, "upvote", "")
 	c.Run()
 }
 
-// Downvote simply downvotes the specified argument.
+// Downvote simply downvotes the specified option.
 func Downvote(id string) {
 	c := makeCmd(id, "downvote", "")
 	c.Run()
 }
 
 // Score returns upvotes minus downvotes.
-func (a Argument) Score() int {
+func (a Option) Score() int {
 	return a.Upvotes - a.Downvotes
 }
 

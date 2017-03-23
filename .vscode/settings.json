@@ -11,5 +11,6 @@
 		"go/**/src/**/sourcegraph.com": true,
 		"go/**/pkg": true,
 		"go/**/bin": true
-	}
+	},
+	"go.gopath": "${workspaceRoot}/go"
 }
