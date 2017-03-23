@@ -184,7 +184,15 @@ const commentsFolder = "/vagrant/data/comments/"
 // LoadComments returns all of the comments on the given option, but they're not guaranteed to be sorted.
 // They will be sorted in a future version.
 func LoadComments(optID string) []Comment {
-	filename := commentsFolder + optID + "-comments.txt"
+	result := []Comment{}
+	for c := range commentList {
+		if commentList[c].Option == optID {
+			result = append(result, commentList[c])
+		}
+	}
+	return result
+
+	/*filename := commentsFolder + optID + "-comments.txt"
 	file, err := os.Open(filename)
 	if err != nil {
 		return []Comment{}
@@ -194,11 +202,11 @@ func LoadComments(optID string) []Comment {
 	result := []Comment{}
 	dec := gob.NewDecoder(file)
 	dec.Decode(&result)
-	return result
+	return result*/
 }
 
 // SaveNewComment persists a new comment with the given information.
-func SaveNewComment(user, optID, body string) error {
+func SaveNewComment(user, optID, body, Type string) error {
 	if user == "" || optID == "" || body == "" {
 		return Error{"Could not create comment with given information."}
 	}

@@ -139,7 +139,7 @@ func main() {
 			return
 		}
 
-		err := storage.SaveNewComment(getLoggedIn(r).Email, argID, r.FormValue("commentBody"))
+		err := storage.SaveNewComment(getLoggedIn(r).Email, argID, r.FormValue("commentBody"), r.FormValue("type"))
 		if err != nil {
 			data := views.NewViewData("Error", getLoggedIn(r))
 			data.Key["errorMessage"] = err.Error()
