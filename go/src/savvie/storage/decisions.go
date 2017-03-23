@@ -9,66 +9,66 @@ type Decision struct {
 
 var decisionList = []Decision{
 	Decision{
+		"692",
 		"When to hold the meeting",
-		"Ideas and thoughts of when the meeting should be held",
 		[]Option{
 			Option{
-				"Saturday at 5PM",
+				"78912",
 				"Hold the meeting on Saturday at 5PM",
 				4,
 				1,
 			},
 			Option{
-				"Wednesday at 8AM",
-				"Hold it early to get it out of the way, while we're all ready for work",
+				"89123",
+				"Hold it Wednesday at 8AM to get it out of the way, while we're all ready for work",
 				1,
 				9,
 			},
 		},
 	},
 	Decision{
-		"Meeting Refreshments",
+		"186",
 		"What refreshments are wanted at the meeting",
 		[]Option{
 			Option{
-				"Popcorn",
-				"Something that is still easy to talk while eating",
+				"67891",
+				"Popcorn - Something that is still easy to talk while eating",
 				2,
 				6,
 			},
 			Option{
-				"Apples and fruit dip",
-				"Something healthy",
+				"56789",
+				"Apples and fruit dip - Something healthy",
 				4,
 				3,
 			},
 			Option{
-				"Cookies",
-				"Not greasy, but easy to eat while talking",
+				"45678",
+				"Cookies - Not greasy, but easy to eat while talking",
 				4,
 				3,
 			},
 		},
 	},
 	Decision{
-		"Meeting Location",
+		"925",
 		"Where the meeting should take place",
 		[]Option{
 			Option{
-				"Official Conference Room",
-				"Will have a more formal atmosphere, safe from weather",
+				"23456",
+				"Official Conference Room - Will have a more formal atmosphere, safe from weather",
 				3,
 				2,
 			},
 			Option{
-				"Park across the street",
-				"Weather is getting better and it will help us focus more when we come back",
+				"12345",
+				"Park across the street - Weather is getting better and it will help us focus more when we come back",
 				9,
 				3,
 			},
 			Option{
-				"Standing up, on the workfloor",
-				"Give us an opportunity to stretch our limbs, yet safe from bad weather",
+				"34567",
+				"Standing up, on the workfloor - Give us an opportunity to stretch our limbs, yet safe from bad weather",
 				1,
 				4,
 			},
@@ -84,8 +84,8 @@ func ListDecisions() []Decision {
 // GetDecision returns a specific decision.
 func GetDecision(decisionID string) Decision {
 	for _, d := range decisionList {
-		if d.ID==decisionID {
-			return d;
+		if d.ID == decisionID {
+			return d
 		}
 	}
 	return Decision{}
