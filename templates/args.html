@@ -8,6 +8,7 @@
     {{template "section-nav.html" .}}
 
     <div class="container">
+        <p>Decision: <a href="/decisions/{{.Key.decision.ID}}">{{.Key.decision.Description}}</a></p>
         <h1>Option No. {{.Key.argument.ID}}</h1>
         <div class="well">
             <p class="h3">

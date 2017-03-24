@@ -90,3 +90,15 @@ func GetDecision(decisionID string) Decision {
 	}
 	return Decision{}
 }
+
+// DecisionForOption returns the Decision associated with the given Option.
+func DecisionForOption(opt Option) Decision {
+	for decision := range decisionList {
+		for option := range decisionList[decision].Options {
+			if decisionList[decision].Options[option].ID == opt.ID {
+				return decisionList[decision]
+			}
+		}
+	}
+	return Decision{}
+}

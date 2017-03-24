@@ -39,9 +39,7 @@ func main() {
 	http.HandleFunc("/opts/", func(w http.ResponseWriter, r *http.Request) {
 		// Show all arguments
 		if r.URL.Path == "/opts/" {
-			data := views.NewViewData("DEPRECATED All options", getLoggedIn(r))
-			data.Key["arguments"] = storage.ListOpts()
-			views.RenderView(w, "all-args.html", data)
+			views.RenderView(w, "error.html", views.Title("This page is deprecated; it shouldn't be reachable."))
 			return
 		}
 
@@ -56,6 +54,7 @@ func main() {
 
 		data := views.NewViewData(a.Description, getLoggedIn(r))
 		data.Key["argument"] = a
+		data.Key["decision"] = storage.DecisionForOption(a)
 		data.Key["comments"] = storage.LoadComments(a.ID)
 		views.RenderView(w, "args.html", data)
 	})
