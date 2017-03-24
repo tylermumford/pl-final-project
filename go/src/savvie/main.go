@@ -98,7 +98,7 @@ func main() {
 		}
 		descr := r.PostFormValue("descr")
 		newArg := storage.SaveNewOption(descr)
-		http.Redirect(w, r, "/args/"+newArg, http.StatusFound)
+		http.Redirect(w, r, "/opts/"+newArg, http.StatusFound)
 	})
 
 	http.HandleFunc("/upvote/", func(w http.ResponseWriter, r *http.Request) {
@@ -107,7 +107,7 @@ func main() {
 		}
 		if argID, found := findArgIDInPath(r.URL.Path); found {
 			storage.Upvote(argID)
-			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
+			http.Redirect(w, r, "/opts/"+argID, http.StatusSeeOther)
 		} else {
 			http.Redirect(w, r, "/error", http.StatusNotFound)
 		}
@@ -120,7 +120,7 @@ func main() {
 		}
 		if argID, found := findArgIDInPath(r.URL.Path); found {
 			storage.Downvote(argID)
-			http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
+			http.Redirect(w, r, "/opts/"+argID, http.StatusSeeOther)
 		} else {
 			w.WriteHeader(http.StatusNotFound)
 			views.RenderView(w, "error.html", views.Title("Error"))
@@ -147,7 +147,7 @@ func main() {
 			return
 		}
 
-		http.Redirect(w, r, "/args/"+argID, http.StatusSeeOther)
+		http.Redirect(w, r, "/opts/"+argID, http.StatusSeeOther)
 	})
 
 	http.HandleFunc("/signup-submit", func(w http.ResponseWriter, r *http.Request) {

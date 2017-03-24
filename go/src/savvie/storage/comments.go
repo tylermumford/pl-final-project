@@ -1,8 +1,6 @@
 package storage
 
 import (
-	"encoding/gob"
-	"os"
 	"savvie/users"
 	"time"
 )
@@ -191,33 +189,13 @@ func LoadComments(optID string) []Comment {
 		}
 	}
 	return result
-
-	/*filename := commentsFolder + optID + "-comments.txt"
-	file, err := os.Open(filename)
-	if err != nil {
-		return []Comment{}
-	}
-	defer file.Close()
-
-	result := []Comment{}
-	dec := gob.NewDecoder(file)
-	dec.Decode(&result)
-	return result*/
 }
 
 // SaveNewComment persists a new comment with the given information.
-func SaveNewComment(user, optID, body, Type string) error {
+func SaveNewComment(user, optID, body, whichType string) error {
 	if user == "" || optID == "" || body == "" {
 		return Error{"Could not create comment with given information."}
 	}
-
-	all := LoadComments(optID)
-	filename := commentsFolder + optID + "-comments.txt"
-	file, err := os.Create(filename)
-	if err != nil {
-		return Error{"Could not open file: " + filename}
-	}
-	defer file.Close()
 
 	c := Comment{
 		User:   user,
@@ -225,11 +203,9 @@ func SaveNewComment(user, optID, body, Type string) error {
 		// TODO: set location when we set the time
 		Date: time.Now(),
 		Body: body,
+		Type: whichType,
 	}
-	all = append(all, c)
-
-	enc := gob.NewEncoder(file)
-	enc.Encode(all)
+	commentList = append(commentList, c)
 	return nil
 }
 

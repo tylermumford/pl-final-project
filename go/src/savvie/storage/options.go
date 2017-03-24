@@ -17,8 +17,6 @@ import (
 	"math/rand"
 	"os"
 	"os/exec"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -40,22 +38,6 @@ type Option struct {
 	Description string
 	Upvotes     int
 	Downvotes   int
-}
-
-// ListOpts returns a list of all the options on the site.
-func ListOpts() (optIDs []Option) {
-	// sort by modification time. // parse out name w/o ".txt"
-	data, _ := os.Open(optionsFolder)
-	file, _ := data.Readdirnames(0)
-	//info, _ := data.Readdir(-1) // ignoring this error
-	//sort.Sort(info)
-
-	for _, value := range file {
-		// value contains "55555.txt", so we slice it to get just the number.
-		optIDs = append(optIDs, GetOpt(value[:5]))
-	}
-
-	return
 }
 
 func makeCmd(filename string, sCmd string, descr string) exec.Cmd {
@@ -98,53 +80,31 @@ func GetOpt(id string) Option {
 		}
 	}
 	return Option{}
-
-	c := makeCmd(id, "export", "")
-	str, _ := c.Output()
-	parts := strings.Split(string(str), "@@@")
-
-	// Should consist of description, upvotes, and downvotes.
-	if len(parts) != 3 {
-		return Option{}
-	}
-
-	u, _ := strconv.Atoi(strings.TrimSpace(parts[1]))
-	d, _ := strconv.Atoi(strings.TrimSpace(parts[2]))
-	return Option{
-		ID:          id,
-		Description: parts[0],
-		Upvotes:     u,
-		Downvotes:   d,
-	}
 }
 
 // Upvote simply upvotes the specified option.
 func Upvote(id string) {
-	c := makeCmd(id, "upvote", "")
-	c.Run()
+	for decision := range decisionList {
+		for option := range decisionList[decision].Options {
+			if decisionList[decision].Options[option].ID == id {
+				decisionList[decision].Options[option].Upvotes++
+			}
+		}
+	}
 }
 
 // Downvote simply downvotes the specified option.
 func Downvote(id string) {
-	c := makeCmd(id, "downvote", "")
-	c.Run()
+	for decision := range decisionList {
+		for option := range decisionList[decision].Options {
+			if decisionList[decision].Options[option].ID == id {
+				decisionList[decision].Options[option].Downvotes++
+			}
+		}
+	}
 }
 
 // Score returns upvotes minus downvotes.
 func (a Option) Score() int {
 	return a.Upvotes - a.Downvotes
 }
-
-/*
-func (list *[]os.FileInfo) Len() int {
-	return len(list)
-}
-func (list *[]FileInfo) Less(i, j int) bool {
-	return list[i].ModTime < list[j].ModTime
-}
-func (list *[]FileInfo) Swap(i, j int) {
-	tmp := list[i]
-	list[i] = list[j]
-	list[j] = tmp
-}
-*/
