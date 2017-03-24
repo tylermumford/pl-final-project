@@ -61,20 +61,12 @@
                 <label for="commentBody">Comment</label>
                 <textarea name="commentBody" id="commentBody" rows="4" class="form-control"></textarea>
             </div>
-            <div class="form-group pull-right">
+            <div class="pull-right">
                 <span>This is a: </span>
-                <div class="btn-group">
-                    <input type="button" class="btn btn-default active" value="Comment">
-                    <input type="button" class="btn btn-default" value="Pro">
-                    <input type="button" class="btn btn-default" value="Con">
-                </div>
+                <label><input type="radio" name="type" value="Comment" checked> Comment</label>
+                <label><input type="radio" name="type" value="Pro"> Pro</label>
+                <label><input type="radio" name="type" value="Con"> Con</label>
             </div>
-            <fieldset>
-                <legend>Type</legend>
-                <input type="radio" name="type" value="Comment"> Comment
-                <input type="radio" name="type" value="Pro"> Pro
-                <input type="radio" name="type" value="Con"> Con
-            </fieldset>
             <input type="submit" class="btn btn-info" value="Submit">
         </form>
         {{else}}
