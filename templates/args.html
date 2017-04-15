@@ -43,14 +43,14 @@
         <a href="/downvote/{{.Key.argument.ID}}" class="btn btn-danger">
             <span class="glyphicon glyphicon-thumbs-down"></span> Downvote this Choice
         </a>
-        <a href="/create" class="btn btn-default">
+        <a href="/create" class="disabled btn btn-default">
             <span class="glyphicon glyphicon-pencil"></span> Propose a new Choice&hellip;
         </a>
 
         <hr> {{range .Key.comments}}{{if eq .Type "Comment"}}
         <p>
             {{.Body}} <br>
-            <span class="text-muted">&mdash; {{.NiceName}} : {{.NiceDate}}</span>
+            <span class="text-muted">&mdash; {{.User}} : {{.NiceDate}}</span>
         </p>
         {{end}}{{end}} {{if .Key.comments}}
         <hr>{{end}} {{if .User.Email}}
