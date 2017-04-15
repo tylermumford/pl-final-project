@@ -8,19 +8,13 @@
     {{template "section-nav.html" .}}
 
     <div class="container">
-        <h1>Decision No. {{.Key.decision.ID}}</h1>
-        <div class="well">
-            <p class="h3">
-                {{.Key.decision.Description}}
-            </p>
-        </div>
-
+        <h1>{{.Key.decision.Description}}</h1>
         <hr>
         <h2>Choices:</h2>
         <div class="choices-list">
             {{range .Key.choices}}
             <p class="choice well well-sm">
-                <a href="/opts/{{.ID}}">{{.Description}}</a> ({{.Score}}&nbsp;pt)
+                <a href="/choices/{{.ID}}">{{.Description}}</a> ({{.Score}}&nbsp;pt)
             </p>
             {{end}}
         </div>

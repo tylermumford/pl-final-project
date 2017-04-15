@@ -8,7 +8,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"regexp"
 	"savvie/storage"
@@ -38,7 +37,7 @@ func main() {
 
 	http.HandleFunc("/choices/", func(w http.ResponseWriter, r *http.Request) {
 		// Show all arguments
-		if r.URL.Path == "/choices/" {
+		if r.URL.Path == "/args/" {
 			views.RenderView(w, "error.html", views.Title("This page is deprecated; it shouldn't be reachable."))
 			return
 		}
@@ -149,7 +148,7 @@ func main() {
 		http.Redirect(w, r, "/choices/"+argID, http.StatusSeeOther)
 	})
 
-	http.HandleFunc("/signup-submit", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/signup-submit/", func(w http.ResponseWriter, r *http.Request) {
 		fname := r.FormValue("fname")
 		lname := r.FormValue("lname")
 		email := r.FormValue("email")
@@ -170,7 +169,13 @@ func main() {
 		}
 
 		if len(problems) != 0 {
-			fmt.Fprint(w, problems)
+			//fmt.Fprint(w, problems)
+			data := views.NewViewData("Sign up", users.User{})
+			data.Key["problems"] = problems
+			data.Key["fname"] = fname
+			data.Key["lname"] = lname
+			data.Key["email"] = email
+			views.RenderView(w, "signup.html", data)
 			return
 		}
 
