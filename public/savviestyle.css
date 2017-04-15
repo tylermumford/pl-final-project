@@ -11,12 +11,12 @@ div.motions {
     padding-top: 10px;
 }
 
-.options-list {
+.choices-list {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
 }
 
-.option {
+.choice {
     width: 48%;
 }

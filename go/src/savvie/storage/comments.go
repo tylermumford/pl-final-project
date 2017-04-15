@@ -5,12 +5,12 @@ import (
 	"time"
 )
 
-// Comment stores everything about an option's comment. User contains a username
-// (email address). Option contains an Option.ID. Body will be escaped, so HTML
+// Comment stores everything about an choice's comment. User contains a username
+// (email address). Choice contains an Choice.ID. Body will be escaped, so HTML
 // inside will not be rendered.
 type Comment struct {
 	User   string
-	Option string
+	Choice string
 	Date   time.Time
 	Body   string
 	Type   string // "Comment", "Pro", or "Con".
@@ -161,7 +161,7 @@ var commentList = []Comment{
 		"lucky",
 		"34567",
 		time.Now(),
-		"It's similar to the option to sit in a meeting room",
+		"It's similar to the choice to sit in a meeting room",
 		"Comment",
 	},
 }
@@ -179,12 +179,12 @@ func (c *Comment) NiceName() string {
 
 const commentsFolder = "/vagrant/data/comments/"
 
-// LoadComments returns all of the comments on the given option, but they're not guaranteed to be sorted.
+// LoadComments returns all of the comments on the given choice, but they're not guaranteed to be sorted.
 // They will be sorted in a future version.
 func LoadComments(optID string) []Comment {
 	result := []Comment{}
 	for c := range commentList {
-		if commentList[c].Option == optID {
+		if commentList[c].Choice == optID {
 			result = append(result, commentList[c])
 		}
 	}
@@ -199,7 +199,7 @@ func SaveNewComment(user, optID, body, whichType string) error {
 
 	c := Comment{
 		User:   user,
-		Option: optID,
+		Choice: optID,
 		// TODO: set location when we set the time
 		Date: time.Now(),
 		Body: body,

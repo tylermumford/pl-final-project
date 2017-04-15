@@ -9,10 +9,9 @@
 
     <div class="container">
         <p>Decision: <a href="/decisions/{{.Key.decision.ID}}">{{.Key.decision.Description}}</a></p>
-        <h1>Option No. {{.Key.argument.ID}}</h1>
+        <h1>{{.Key.argument.Description}}</h1>
         <div class="well">
             <p class="h3">
-                {{.Key.argument.Description}}
             </p>
             <ul>
                 <li>Score: {{.Key.argument.Score}}</li>
@@ -41,13 +40,13 @@
         <hr>
 
         <a href="/upvote/{{.Key.argument.ID}}" class="btn btn-success">
-            <span class="glyphicon glyphicon-thumbs-up"></span> Upvote this option
+            <span class="glyphicon glyphicon-thumbs-up"></span> Upvote this Choice
         </a>
         <a href="/downvote/{{.Key.argument.ID}}" class="btn btn-danger">
-            <span class="glyphicon glyphicon-thumbs-down"></span> Downvote this option
+            <span class="glyphicon glyphicon-thumbs-down"></span> Downvote this Choice
         </a>
-        <a href="/" class="btn btn-default">
-            <span class="glyphicon glyphicon-pencil"></span> Propose a new option&hellip;
+        <a href="/create" class="btn btn-default">
+            <span class="glyphicon glyphicon-pencil"></span> Propose a new Choice&hellip;
         </a>
 
         <hr> {{range .Key.comments}}{{if eq .Type "Comment"}}

@@ -36,16 +36,16 @@ func main() {
 		views.RenderView(w, "about.html", data)
 	})
 
-	http.HandleFunc("/opts/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/choices/", func(w http.ResponseWriter, r *http.Request) {
 		// Show all arguments
-		if r.URL.Path == "/opts/" {
+		if r.URL.Path == "/choices/" {
 			views.RenderView(w, "error.html", views.Title("This page is deprecated; it shouldn't be reachable."))
 			return
 		}
 
-		// Show a specific option
+		// Show a specific choice
 		argID, found := findArgIDInPath(r.URL.Path)
-		a := storage.GetOpt(argID)
+		a := storage.GetChoice(argID)
 		if !found || a.ID == "" {
 			w.WriteHeader(http.StatusNotFound)
 			views.RenderView(w, "error.html", views.Title("Not found"))
@@ -54,7 +54,7 @@ func main() {
 
 		data := views.NewViewData(a.Description, getLoggedIn(r))
 		data.Key["argument"] = a
-		data.Key["decision"] = storage.DecisionForOption(a)
+		data.Key["decision"] = storage.DecisionForChoice(a)
 		data.Key["comments"] = storage.LoadComments(a.ID)
 		views.RenderView(w, "args.html", data)
 	})
@@ -79,7 +79,7 @@ func main() {
 
 		data := views.NewViewData(d.Description, getLoggedIn(r))
 		data.Key["decision"] = d
-		data.Key["options"] = d.Options
+		data.Key["choices"] = d.Choices
 		views.RenderView(w, "decision.html", data)
 	})
 
@@ -96,8 +96,8 @@ func main() {
 			return
 		}
 		descr := r.PostFormValue("descr")
-		newArg := storage.SaveNewOption(descr)
-		http.Redirect(w, r, "/opts/"+newArg, http.StatusFound)
+		newArg := storage.SaveNewChoice(descr)
+		http.Redirect(w, r, "/choices/"+newArg, http.StatusFound)
 	})
 
 	http.HandleFunc("/upvote/", func(w http.ResponseWriter, r *http.Request) {
@@ -106,7 +106,7 @@ func main() {
 		}
 		if argID, found := findArgIDInPath(r.URL.Path); found {
 			storage.Upvote(argID)
-			http.Redirect(w, r, "/opts/"+argID, http.StatusSeeOther)
+			http.Redirect(w, r, "/choices/"+argID, http.StatusSeeOther)
 		} else {
 			http.Redirect(w, r, "/error", http.StatusNotFound)
 		}
@@ -119,7 +119,7 @@ func main() {
 		}
 		if argID, found := findArgIDInPath(r.URL.Path); found {
 			storage.Downvote(argID)
-			http.Redirect(w, r, "/opts/"+argID, http.StatusSeeOther)
+			http.Redirect(w, r, "/choices/"+argID, http.StatusSeeOther)
 		} else {
 			w.WriteHeader(http.StatusNotFound)
 			views.RenderView(w, "error.html", views.Title("Error"))
@@ -146,7 +146,7 @@ func main() {
 			return
 		}
 
-		http.Redirect(w, r, "/opts/"+argID, http.StatusSeeOther)
+		http.Redirect(w, r, "/choices/"+argID, http.StatusSeeOther)
 	})
 
 	http.HandleFunc("/signup-submit", func(w http.ResponseWriter, r *http.Request) {
