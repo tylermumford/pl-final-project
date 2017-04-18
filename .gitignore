@@ -12,7 +12,7 @@ data
 go/bin/*
 go/pkg/*
 go/src/*
-!go/src/savvie/*
+#!go/src/savvie/*
 
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
